@@ -1,0 +1,531 @@
+### AWS Cloud
+
+AWS Cloud is the set of APIs, multiple Data center and a huge network of optical fibre, under which we can provision the resources and services using APIs provided by AWS, available in Data center like EBS, EC2, EFS, VPC, Route 53, LAMBDA Service, Load Balancing, Auto scaling, Load Balancers, RDS and so on.
+
+AWS Cloud have 37 regions, 117 availability zones as of now, and Amazon is planning to introduce 4 regions in upcoming Years.
+
+For Selecting the region, we can check the latency with all the region using AWS ping on google.
+
+---------------------EC2 Instance
+
+EC2 is the computing service, using which we can create VMs and manage the VMs in more efficient manner like changing the instance type, Ec2 Backups recovery.
+
+**Hardware Type**
+
+- nano : RAM 0.5 GB
+- Micro : RAM 1 GB
+- Small : RAM 2 GB
+- Medium : RAM 4 GB
+- Large : RAM 8 GB
+- Xlarge : RAM 16 GB
+- 2xlarge : 32 GB
+
+1. We can get connect to AWS Instance using Key and without key
+
+**with key** use ssh ec2-user@172.19.10.72 -i key.pem connect via window cmd, mac cli directly also call openssh better to download key in .pem format
+
+**without Key**: get connect with CLI Command prompt directly from AWS console
+
+with ppk file key, previously we did not get ppk file, we use to generate ppk file using puttygen, but now AWS provide it along with instance creation.
+
+->open putty - category pane - connection - ssh - auth - select ppk file (Private key)
+
+If we want to create EC2 without Key, than we can keep our password, here we dont need any pem key or password to login into EC2 Console
+
+Login to machine from AWS console and edit /etc/ssh/sshd_config
+
+set Password Authentication : yes
+
+set password
+
+set PermitRootLogin yes
+
+And After editing the file RUN -> systemctl restart sshd
+
+To change password of User use : passwd User
+
+2. Similarly for connecting AWS Windows Ec2 instance we can connect via
+
+RDP Client : Remote desktop protocol (we can also access it via mstsc command)
+Download RDP File
+Open the tab "Get Password"
+Copy and paste the key pair file content
+Click decrypt -> We can see our password now.
+
+Fleet Manager : Tool provided by AWS using which we can access the machine remotely. Without accessing local desktop directly connect to machine desktop
+
+Create EC2 Instance
+open Ec2 Service in AWS console -> Launch Instance -> select OS image -> select instance type ->
+-> select Instance Configuration ie network (VPC) otherwise ec2 will create in default VPC -> enable auto assign IP
+-> select Security Group -> Add storage (by default root volume is 8GB which can be changed) -> select key pair or create key pair -> create instance
+
+Important things of Instance
+Instance ID, public ip and public hostname, Private IP, Private Hostname, Elastic IP
+
+Placement Group: Logical grouping of Ec2 Instance within a single availability Zone that allows us to create Ec2 on same hardware.
+
+---------------------trouble shoot instance---------------------
+
+If any instance get terminate by mistake than it will not vanish immediately, it take some time so we can connect to AWS support to get that instance recover by providing Instance ID.
+
+Instance protection
+1. Action of instance -> instance setting -> change termination protection
+-> change stop protection
+-> change shutdown behaviour (what should happen when we poweroff from instance, shutdown/terminate)
+-> change auto recovery behaviour (aws will change the tenancy, if previous one not working)
+
+Trouble shooting.
+2. Action of Instance -> monitor and Troubleshooting -> Get System logs (instance logs)
+-> Ec2 Serial console ()
+-> Get instance Screenshot (it will the current state of
+see where instance is stucking
+-> Manage Detailed monitoring enable(instance monitoring
+like CPU utilization, Network
+will come in 1 min otherwise 5 min.
+reach to threshold than
+-> Manage Cloudwatch alarm (we can set if any resource
+send alerts)
+-> Replace Root Volume (it need image or snapshot)
+
+Note : We can change the Ec2 instance hardware only when we changes the instance type like from t2.micro to t2.small.
+If we are not changing the instance type than it is not possible to change the underlying hardware.
+
+System status check (AWS System Check ): This check. monitor the underlying AWS Cloud infrastructure systems on which
+our instance running. including the
+physical host. networking. power. and hypervisor..
+A failed system status check indicates problems with the infrastructure supporting your
+instance, such as loss of network connectivity to the host. loss of system power, or hardware/software issues on the physical
+host.
+
+solution : we can restart the instance after changeing the instance type which will change the
+instance hardware. so that after restart the Ec2 VM can launch on another hypervisor
+These issues typically require AWS intervention to resolve.
+
+Instance status check : This check monitor the health of the instance itself at the operating system and configuration level.
+Whether the OS is able to Boot Operating system
+A failed instance status check suggests problems within the instance's operating system or
+configuration.
+
+Common reason of this status check failed
+Failure to boot the operating system. (Replace the root Volume)
+Incorrect network or startup configurations.
+Exhausted CPU or memory.
+SG. EBS Volumes EIP are in place or not.
+
+
+--------------Instance Type
+
+On Demand Instance : Instance that we can launch and use as needed, paying only for the time it's running, without any long-term commitment, but we dont get any guarantee for capacity, we may need to wait if we restarting the instance.
+
+Reserved Instance : Like Ec2 or RDS instance which is not required to replace for a long time, we use to provision Reserved Instance
+where we commit to reserve that instance and in exchange of commitment AWS provide us huge discount like 75%
+
+Scheduled Instance : Solution provided by AWS to automate the process of start and stop the EC2 instance and RDS instance
+which reduces the cost. Generally it can be done in Non prod env, where we can automate the process of start and stop of instance according to office working hours.
+
+Capacity Reservation : Capacity Reservations allow you to reserve on-demand EC2 instance capacity in a specific Availability Zone for any duration. This ensures you have guaranteed access to the compute resources you need, even during periods of high demand or when availability might be limited
+
+Dedicated instance : allowing you to run your instances on hardware that is fully isolated for your account.
+Instance will launch on hardware where no other will be running.
+
+Ephemeral Instance : Temporary instances, which gets the large EBS storage in free but, we will lost the data as instance reboot or restart.
+
+General Purpose : moderate configuration (T2, T3(nano micro small medium large xlarge 2xlarge Series)
+Compute optimized : high processing (C Series)
+Memory Optimized : High RAM (R Series)
+accelerated optimized : High Graphic card (P series)
+storage optimized : Heavy storage and fast storage like SSD
+
+-----------------Volumes : Elastic Block Storage
+
+EBS (Elastic Block Storage) : Storage Service provided by AWS, using which we can provision the virtual hard disk volume and attach directly to EC2 Instances.
+
+EBS volumes are designed for persistent storage, meaning the data remains even if the EC2 instance is stopped or terminated.
+
+Type:     GP2,GP3,IO1, IO2, SC1, ST1, Magnetic Disk
+Type of EBS (Having More IOPS is having more faster Disk)
+GP2: Min 1GB, Max 16TB, IOPS 16000, Throughput 250MB
+IO1: min 4GB, max 16TB, IOPS 64000, Throughput 1000MB (4 time faster than Gp2)
+
+AWS S3 and EBS are both storage services, but they serve different purposes. S3 is object storage for storing and retrieving large amounts of unstructured data, while EBS is block storage that provides persistent volumes attached to EC2 instances.
+
+EBS is like a virtual Hard disk, Directly attached to Ec2 for low latency. it is accessed like a file system.(Accessed on Transport layer 4)
+S3 accessed via API like HTTP and REST not like a file system. (accessed on Transport Layer 7)
+
+EBS Storage is accessed directly by Operating system or application via iSCSI or fibre channel
+Accessed via API on http/https protocol
+
+Data is divided into Fixed-size block, and each block is assigned a unique address but lack of metadata.
+Data is stored in Objects, where each object includes the data identifier called metadata.
+
+Note : We can't run an application on S3 Storage as, S3 is an Object storage device and EBS is Block storage.
+
+We get by default 8gb of EBS volume with root disk, we can increase that volume as per need.
+We will get 3IOPS perGb while creating EBS volume, Minimum IOPS after 33
+Note : It is necessary to create EBS in same zone of Instance
+
+When we use EBS storage first time we need to format the Disk, Formatting a disk mean dividing a disk of 100 GB into small units called blocks.
+that is why it is called Block storage.
+EFS is also a Block storage
+
+Emphemeral storage : also called instance storage and Temporary storage.
+provides temporary, block-level storage directly attached to the host computer of an EC2 instance.
+It's essentially like a local hard drive for your virtual machine, offering high performance for I/O-intensive tasks. However, this storage is not persistent: data is lost when the instance is stopped, terminated, or fails.
+
+Note : Image is the creation of template of a system along with OS, software configuration as well. Using Image we can create new system of same configuration
+Snapshot is the Point-in-time copy of a disk or volume (It is store in EBS Disk)
+If want to create VM using Snapshot, so we need to create AMI using snapshot first.
+when we create image of any VM it will also create Snapshot of all volumes.
+
+
+How to attach external EBS storage : it is mandatory to create EBS volume in same zone of EC2 instance.
+df -h (command to show all disk size attached to instance)
+lsblk (Available Disk for Instance)
+Once we attach EBS volume to instance via AWS console we need to format the Disk
+formatting Disk -> mkfs.ext /dev/xvdf(disk name)
+create Directory at root -> mkdir /NewVolume           //directory created on instance where EBS will
+be mount
+Mount to directory -> mount /dev/xvdf /NewVolume
+Show Disk -> df -h                                     //we can see the volume is mounted
+/NewVolume
+
+Note : to mount Disk permanently so that it should be stay mounted even after reboot than make entry in
+/etc/fstab file
+Entry -> /dev/xvdf /NewVolume      ext4 defaults 0 0
+run : mount -a
+
+How to increase EBS volume
+increase the size from AWS console.
+after hitting command -> lsblk we can see new increased volume but when we check mount points using df -h
+than we see only old size.
+
+command -> blkid /dev/xvdf          (blkid use to display attr of block device, like filesystem, UUID, labels and
+other metadata)
+command -> resize2fs /dev/xvdf (after hitting this command we can see the new volume size in df -h)
+
+Note : resize2fs will work only for mkfs.ext format, for xfs file system we need to use xfs_growfs
+We never format root volume. by default we get formatted root volume in xfs file system we can see using blkid
+command
+
+For increasing the size of root volume
+Command -> growpart /dev/xvda 1 -> command to extend the root size (where /dev/xvda is root disk)
+than run :-  xfs_growfs /dev/xvda1
+
+Note: AWS does not allow to reduce the size, to achieve that create new volume of less size with same filesystem format
+and copy the data of old big volume to new one
+
+
+For reducing the size, we have 50GB(/dev/xvdf) hard disk and reducing it to 20GB
+-> create vol of 20GB and attach it to instance with any device name like /dev/sdg
+-> lsblk
+-> blkid
+-> fdisk -l (provide all the information about disk
+-> format new vol in the same file system of /dev/xvdf
+-> mount it to different mount point : mount /dev/sdg /xyz
+-> now sync the data of 50GB vol to 20GB vol : rsync -axv /OldVol/* /NewVol
+-> unmount both VOL and detach both vol (it is imp to detach both because we have to change the device name
+from /dev/sdg to /dev/xvdf
+-> And now attach 20GB vol while attaching we can change the device name as well
+-> mount to old mount point : mount /dev/xvdf /OldVol
+
+Note : we can attach vol to instance when they have same zone. We can attach IO1 Vol EBS disk to multi instance
+Multi Attachment (only possible in IO1 and IO2), means one volume attach to multiple instance. But it is only possible
+on Nitro Based EC2 instance)
+
+How to attach volume to different zone ??
+-> umount vol , detach vol , create snapshot, create new vol and copy snapshot in new zone
+
+Other Basic Linux command may required
+
+1. SSH Login to machine:-
+   ssh ec2-user@1702.19.10.72 -i Key.pem
+
+2. Password Change :-
+   sudo passwd root
+
+3. Command Use for extending the volume size of existing volume :-
+   resize2fs /dev/xvdf
+
+4. command to extend the root size (where /dev/xvda is root disk)
+   growpart /dev/xvda 1
+   than run :-  xfs_growfs -d /dev/xvdf
+
+5. How to increase load on machine CPU upto 99%:
+   yes > /dev/null &
+   
+6. How to release load on machine CPU
+killall -p yes
+
+7. Command to check mount points on linux machine:-
+df -h
+
+8. How to check Free RAM in Linux machine
+Free -h
+
+11. How to find any file in Linux
+find -i name "filename"
+
+12. ADD User RHEL -> useradd  and ubuntu -> adduser
+
+13. How to change the Hostname of EC2 Instance
+sudo hostnamectl set-hostname NEW_HOSTNAME
+edit file /etc/sysconfig/network and SET  HOSTNAME= NEW_HOSTNAME
+
+14. How to list all Users :- cut -d: -f1 /etc/passwd
+
+15. How to Install the desktop in Linux machine :- dnf groupinstall "workstation" --nobest , dnf groupinstall "Server with GUI" - --nobest
+
+export JAVA_HOME=/u02/binaries/java/jdk1.8.0_241/
+export PATH=$JAVA_HOME/bin:$PATH.
+
+16. How to Change the Custom DNS
+The DNS server is configured in /etc/resolv.conf file in all ec2 instance
+By default VPC DNS server is  172.31.0.2
+But the /etc/resolv.conf file replace on every reboot, so we need to change the /etc/dhcp/dhclient.conf. if not exist than create
+change with below data
+supersede domain-name-servers ip_add_of_dnsServer;
+reboot
+
+
+-------------------------Elastic File system
+
+Elastic File System (EFS) :- EFS is the serverless network storage device(Similar as SAN,SAMBA), because EFS gets an IP from our assigned VPC,
+which is highly available because we can create EFS in multizone as well. EFS is mutable
+because we do not have any definite size of
+EFS Disk attached, its size increases as the data on the disk increases.
+EFS Can be attached to multiple instance at a time but EBS can not attached to multiple device.
+
+Both EFS and EBS are Block storage.
+
+Two type : Standard(multizone) and One Zone
+IP is assigned to EFS from VPC, under which we have created EFS.
+
+Similarity between EBS and EFS is both are network storage means the disk is not the part of local hard disk, data is storing somewhere on disk of network.
+
+We need to attach security group to EFS file system.
+
+How to Mount EFS with Linux Instance
+
+First Install the linux package required to provision EFS service.
+amazon linux :- sudo yum install -y amazon-efs-utils
+
+RHEL and SUSE :- sudo yum install -y nfs-utils
+
+Ubuntu :- sudo apt-get install nfs-common
+
+Run the Command :- mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport fs-aa87367b.efs.ap-south-1.amazonaws.com:/ /disk name
+
+Note : the above command of EFS attachment is provided by AWS console, no need to learn.
+
+Note : EFS is not supported for windows
+
+-------------------------Virtual Private Cloud -------------------------
+
+VPC is logical grouping of Set of IP addresses, using which we can create our own network and further divide that network in to small networks called subnets.
+
+We create our vpc and than subnet under AWS cloud, after creation of own VPC, every instance, every storage or any network device will get the IP from the newly created VPC and subnet CIDR block.
+
+Classful and classless addressing are methods of organizing IP addresses, but they differ significantly in their approach.
+Classful addressing, the older method, divides IP addresses into fixed classes (A, B, C, D, and E), each with predefined network and host portions. This leads to inefficiencies in address allocation, especially as networks grow.
+In Classfull addressing there was limited number of host and limited number of network was their.
+
+Class A: Uses the first byte for the network ID and the remaining three bytes for the host ID. Addresses range from 1.0.0.0 to 126.255.255.255 (default subnet mask: 255.0.0.0). Total Host : 16,777,214 hosts + 2(broadcast and Gateway address)=256*256*256
+
+Note : 127.0.0.0 reserved for loop back (127.0.0.0 - 127.255.255.254) Loopback IP address is special IP address that points to same machine.
+
+Class B: Uses the first two bytes for the network ID and the remaining two bytes for the host ID. Addresses range from 128.0.0.0 to 191.255.255.255 (default subnet mask: 255.255.0.0). Total host :65534  + 2(broadcast and Gateway address)
+
+Class C: Uses the first three bytes for the network ID and the last byte for the host ID. Addresses range from 192.0.0.0 to 223.255.255.255 (default subnet mask: 255.255.255.0). Total host = 254 +2 (broadcast and Gateway address)
+
+Class D: Reserved for multicast addresses (224.0.0.0 to 239.255.255.255). : 3758096384
+Class E: Reserved for future use or experimental purposes (240.0.0.0 to 255.255.255.255).
+
+Classless addressing, also known as CIDR (Classless Inter-Domain Routing), offers more flexibility by allowing variable-length subnet masks, enabling more efficient use of IP address space and supporting larger and more diverse networks. Classless Addressing allow us to divide the network into another small network called subnet
+Classless addressing allow us to break the network at any point and that we can divide into further subnets
+
+logical addressing, use to communicate between computer to computer, ie IP Address
+IPv4 is of 32 BITS, So total address will be 2^32 and IPv6 is of 128 BIT address so Total address will 2^128.
+Each address is unique means each address one and only one network device. Two device can never have same address at a time
+
+Private IP range
+10.0.0.0 to 10.255.255.255/8
+172.16.0.0 to 172.31.255.255/16
+192.168.0.0 to 192.168.255.255/16
+
+IP Address: A 32-bit address (for IPv4) divided into four octets (e.g., 192.168.1.0).
+Subnet Mask: Determines which portion of the IP address is the network and which is the host. It can be written in dotted decimal (e.g., 255.255.255.0) or CIDR notation (e.g., /24).
+
+The "/n" indicates the number of bits used for the network portion (e.g., /24 means 24 bits for the network, leaving 8 bits for hosts)
+Number of Subnets: Depends on how many bits are "borrowed" from the host portion to create subnets.
+Number of Hosts per Subnet: Depends on the remaining host bits after subnetting.
+
+Let suppose You are given an IP range (e.g., 192.168.1.0/24). The subnet mask in CIDR notation (e.g., /24) tells you how many bits are used for the network.
+
+For /24, 24 bits are for the network, leaving 32 - 24 = 8 bits for hosts.
+
+If you are subnetting the network further, you "borrow" bits from the host portion to create subnets.
+If you subnet a /24 network to /26, you borrow 2 bits (26 - 24 = 2) for subnetting.
+Number of subnets = 2^s, where s is the number of bits borrowed for subnetting.
+Borrowing 2 bits (from /24 to /26) gives 2^2 = 4 subnets.
+
+After borrowing bits for subnets, the remaining bits are for hosts
+Number of hosts per subnet = 2^h - 2, where h is the number of host bits.
+For a /26 network, there are 32 - 26 = 6 host bits.
+So, 2^6 = 64, So every subnet will have 64 IP address
+and 64 - 2 = 62 hosts per subnet.
+
+Subnet will be
+-> 192.168.1.0 - 192.168.1.63
+-> 192.168.1.64 - 192.168.1.127
+-> 192.168.1.128 - 192.168.1.191
+-> 192.168.1.192 - 192.168.1.255
+
+Network access control List : an optional layer of security that acts as a firewall for controlling traffic in and out of one or more subnets within a Virtual Private Cloud (VPC)
+NACLs are stateless, meaning they don't remember previous traffic, and they operate at the subnet level, unlike security groups which operate at the instance level.
+By Default Inbound and Out Bound have All traffic DENY. Need to allow Explicitly with rule number and the rule with lower number have highest priority.
+
+
+ENI (Elastic Network Interface): By default we get one ENI with each machine, the private IP assigned to ENI i.e ethernet card.
+
+Create          VPC -> Network & security -> Network Interface
+               provide Subnet, Assign IP either Auto or manually, Provide Security Group ->
+               Attach ENI to Instance
+               hit ifconfig and we can see two ETH0 and ETH1 with two different Private IP.
+
+Route Table :   RT is the set of rules that dictates the path to traffic. means if Traffic of specific VPC need to go outside of VPC that
+               it has to go via specific tools like, IGW, Peer Connection,
+               Transit Gateway etc. it needs to describe in RT only
+
+VPC Peering :   VPC peering in AWS is establishing private connection between two Virtual Private Clouds (VPCs) that
+               allows instances in those VPCs.
+               to connect via private IP address, Generally the Instance will be able to connect via public IP, but there could
+               be latency and lack of security in such
+               communication.
+               If Two VPCs are there than need to create Two RT One RT for Each
+               to communicate with each other via private IP we configure peering connection
+               within the AWS network. (Requester --- Accepter)
+               Requester could be same account or different account.
+               We need Requester acc VPC ID , and Accepter acc VPC ID, account ID
+
+DHCP Option Set: DHCP Dynamic Host Configuration protocol, is the network management protocol. Using which the Ec2
+               instance picks the Domain configuration directly from DHCP.
+               Because It need the domain name, domain name server NTP Server, NETBIOS, for creation of DHCP.
+
+               We can see after creation of Ec2 instance private DNS name is ip_address.domain.com, The Time on each
+               Ec2 instance will same which is created under same network
+               due to NTP Server.
+
+NAT Gateway :   Network Address Translation is used to expose any subnet to internet (0.0.0.0/0).
+               We need to create NAT gateway in the subnet which is exposed to internet using IGW, NAT Gateway will
+               have its own private IP from Web Subnet and RT. We assign one EIP to NAT gateway so that it can recognise the same traffic
+               which was initiated from DB Subnet. A NAT gateway, or Network Address Translation gateway, allows instances within a
+               private subnet to access the internet or other AWS services while preventing inbound connections initiated from the internet
+               to those instances. Essentially, it acts as a translator, converting private IP addresses of instances to a public IP address (of the
+               NAT gateway) for outbound traffic, and then translating back for incoming responses.
+			   
+Egress only internet Gateway. We use this instead of NAT gateway when VPC has IPv6 Addressing
+
+Elastic IP : EIP are the static public IP, which will vanish only when the instance get terminate not when instance restart.
+allocation of Public Ip is done at IGW.
+
+Endpoint Service : Using this Service we can attach any of the AWS service to our VPC. Using which the endpoint service and VPC network is going to communicate privately,
+without exposing their communication on internet, it reduce the latency.
+
+Example : If we attach S3 as Endpoint to VPC than, it is not going communicate privately
+
+AWS Network analyzer service : Using this service we can trouble shoot the traffic path, where the traffic is getting stuck due to misconfiguration. it show the end to end diagram of traffic.
+
+Here we need to provide the Source and destination, which is check by AWS network analyzer it self and show us the path of reachability.
+
+ex. We can check the network communication between two VPC connected via Peering connection.
+
+Bastion Host (jump server): The server which is expose to internet, will create separate subnet for bastion host, and allow public traffic and further it forwards the request to
+APplication server which maintain the security.
+For bastion host we create a separate subnet, than we create one vm in this subnet and we will give public IP to this machine
+We need to reach bastion host first and than via bastion host we will reach to other subnets that have DB ro application running.
+
+transit Gateway : similar as peering connection, establish connection between VPC's. for multiple VPC we going to have so many
+VPC peering connection. but in transit gateway we dont need to make connection separately, just make them connect with transit gateway via RT.
+We need to create Route table using Transit Gateway attachment RT
+
+Example: 3 VPC will have three route table, 3 IGW connected to each VPC.
+Create Transit gateway (provide Transit gateway name)
+create 3 Transit gateway attachment for each VPC. here we need to provide transit gateway ID, and VPC ID and specific Subnets.
+Create 3 transit gateway route tables and add route in each route table for each destination VPC or its subnet.
+
+
+transit gateway multicast : communication protocol used to deliver single stream of message to multiple ips.
+can be used for single or multiple source and destination
+
+Client VPN End Point : Using this End User can connect to Cloud VPC via VPN on secure network.
+We need Either self signed or CA certificate for setup.
+For getting SSL Certificate create private key and CSR and give to CA, and than CA is going to
+give you Signed Certificate and Certificate chain
+also called intermediate certificate.
+
+Open Certificate manager -> import certificate -> Provide .crt, private key, and certificate chain. ->
+import
+
+Create Client VPN Endpoint
+VPN Endpoint Name
+Client IPv4 CIDR : (Client Machine going to get one of the IP from this IP range)
+
+provide certificate (this certificate must be available on End user system al well, while connecting to
+VPN end point.
+
+Authentication Rule. (grant access to or Incoming traffic CIDR or public)
+Use AD authentication
+Use Mutual Authentication (this authentication will be done using certificate)
+Create Client VPN End Point.
+
+Select Created VPN Endpoint and open the associations (select VPC and Subnet)
+Here Select th VPC and the Subnet on which client machine is going to connect.
+
+Select Route Table and create Route.
+destination : 0.0.0.0/0 Target Subnet
+
+download client configuration file. Copy the content of crt into this configuration file.
+Client system should install open VPN. Certificates, private key and chain cert.
+Import the Client Configuration File in openVPN
+Connect to Vpn -> connection successfull.
+
+Open VPN Access Server : When we need to connect with AWS VPC network, but our system do not have Client Configuration
+file and certificates.
+than we need to configure VPN server in our VPC
+whose AMI we can find on Amazon market place and assign the IP from any of the Subnet.
+Create Open-VPN instance
+Login : openvpn, by providing key
+
+it will provide vpn link for Admin UI and Client UI
+login to Client UI (username : openvpn, password openvpn)
+
+Note : Client need to use this Client VPN Url to get connect to network
+
+Site to Site VPN: Establishing the VPN connection between AWS VPC and On-premises Data Centre.
+We need to establish Virtual Private Gateway at AWS Side          (Under VPN tab)
+We need to establish Customer Gateway at Customer on-premises Data centre (here we provide public IP of customer network)
+
+In a Site-to-Site VPN, communication happens over the internet using public IP addresses for the tunnel endpoints. However, the traffic within the VPN tunnel is encrypted and uses the private IP addresses of the networks being connected. This means that while the VPN connection itself is established over the public internet using public IPs, the data being transmitted within the secure tunnel is secured using the private IP addresses of the internal networks.
+
+Create Virtual private Gateway on AWS Cloud
+Attach Virtual private gateway to VPC
+Create Customer Gateway on AWS cloud. (Provide name Ip address of machine on which we are establishing connection)
+
+Create Site to Site VPN Connection : We will create tunnel between AWS and on premises, need to provide
+Virtual private gateway
+customer gateway, and need to provide static IP which mean after
+connecting to on premises, on which network should
+connect. so we can give either subnet or individual IP as well.
+Create connection.
+Now we can see the Two tunnel will be created in down state under Site to site VPN Connection.
+
+Edit Route and exit the traffic of subnet via virtual private gateway.
+or User Route propagation instead of Route table entry, it will make the entry automatically.
+
+Download the configuration file form aws console site to site VPN. (need to provide vendor details or download generic, mean which vendor tools on-premises is using)
+Send this configuration file to on-premises team. (this configuration file will have the tunnel information)
+
+[ Router ] --- [ Virtual Private Gateway ]   VPN Connection <----------- Customer Gateway [ ]
+
+
+AWS Direct

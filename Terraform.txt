@@ -1,0 +1,1476 @@
+Terraform: terraform is a open source, infrastructure as a code, cloud management tool, it allows us to provision cloud
+resources across the multiple cloud provider. We can create infrastructure on any cloud using terraform code.
+
+How to install and configure terraform -----------------------
+
+go to https://terraform.io/download.html
+
+after downloading terraform for specific OS, cd to terraform downloaded directory
+now need to set the path of terraform : copy the terraform path and add path in env variable of mycomputer
+
+now hit command terraform from any directory.
+
+Download Visual Studio and install hashicorp terraform plugin (it will help syntax correction)
+
+For linux : download terraform zipped package and keep it in linux OS
+unzip terraform_1.1.0_linux.zip
+
+we can add path in linux
+    export path=$PATH:$(pwd) present working directory or path to terraform binaries
+    or
+    put the terraform binaries inside any path of $PATH Variable
+
+like first hit : echo $PATH
+    /usr/local/bin:/usr/local/bin:/local/sbin:usr/bin (this will show multiple path which are added as system
+variable)
+    cp -r terraform /usr/local/bin
+    now we can run terraform command from anywhere in linux OS
+
+    or
+    open terraform.io and copy the link of any linux os terraform package (copy link location using right click)
+    and hit -> wget https://release.hashicorp.com/terraform/0.13.5/terraform_0.13.5_linux_amd64.zip on linux machine
+    we can see the terraform.zip file in current directory, than unzip and copy it to /bin directory
+
+-------------------------------Lecture 2
+
+terraform file extention will be .tf
+
+for any new directory or to run a new terraform file in a new directory we need to use terraform init command.
+terraform init load the terraform configuration file in current directory. so that terraform can recognise its files.
+it creates .terraform/ directory
+
+how to run terraform code or file -> terraform plan
+terraform plan read the .tf file and let us know, what update and changes terraform is going to make on our cloud
+infrastructure.
+
+To communicate with cloud provider we need to use authentication methods provided by terraform
+like
+
+Note : We need to mention only those resource, whose permission is owned by IAM user, whose access-key and secret-key we
+have given
+		
+	One more way to authenticate, just attach a IAM role to terraform EC2 machine, and Role should have all the required policy attached on which
+	we need to perform terraform action. no need to provide any access-key and secret-key
+	
+	provider "aws" {
+	region = "ap-south-1"
+	}
+
+
+in below code. we are creating EC2 instance
+
+create with below content aws.tf
+    provider "aws"{
+        region     = "us-west-2"              The region where we want to set up our infrastructure
+        access_key = "my-access-key"
+        secret_key = "my-secret-key"
+    }
+
+    resource "aws_instance" "block_name" {
+        ami            = "AMI ID From AWS Console"
+        instance_type  = "t3.micro"
+        tag {
+            name       = "Terraform_Instance"
+        }
+    }
+
+    resource "aws_eip" "my_eip"
+        }
+
+    resource "aws_security_group" "example_security_group" {
+        name           = "example-sg"
+        description    = "Security group for example application"
+        vpc_id         = aws_vpc.main.id # Reference to an existing VPC
+        tags = {
+            Name = "example-sg"
+        }
+    }
+
+    resource "aws_key_pair" "my_key_pair" {
+        key_name       = "my-terraform-key"
+        public_key     = tls_private_key.rsa_key.public_key_openssh
+    }
+	
+
+resource "aws_ebs_volume" "example_volume" {
+    availability_zone = "us-east-1a"
+    size              = 50
+    type              = "gp2"
+    tags = {
+        Name = "MyExampleVolume"
+    }
+}
+
+CMD -> hit terraform init                 this will initialise the terraform, so that terraform is get ready to make change in
+infrastructure
+                                          For every new directory we need to run terraform init command
+
+    terraform plan                        this command will show what changes terraform will going to make in our cloud
+infrastructure
+
+output -> plan 1 to add, 0 to change, 0 to destroy
+
+    terraform apply                       this command will actually make the changes.
+                                          it is mandatory, to plan and than apply the terraform
+    plan : 1 to add, 0 to change, 0 to destroy
+
+Note : The terraform plan we just created and want to deprovision that resource, than we can use destroy command as below
+using same
+    terraform code.
+
+    terraform destroy
+    plan: 0 to add, 0 to change, 1 to destroy
+
+if we want to create 10 instance at a time than use count attribute
+
+    resource "aws_instance" "block_name" {
+        ami            = "AMI ID From AWS Console"
+        instance_type  = "t3.micro"
+        count          = 10
+        tag{
+            name       = "Terraform_Instance"
+        }
+    }
+	
+
+-------------------------------Lecture 3
+We Don't need to write terraform code every time, we copy the code form given below link, and edit as per our requirement.
+link: https://registry.terraform.io/providers/hashicorp/aws/latest/docs
+
+Example: ec2.tf
+    provider "aws"{
+        region     = "us-west-2"              The region where we want to set up our infrastructure
+        access_key = "my-access-key"
+        secret_key = "my-secret-key"
+    }
+
+    data "aws_ami" "ubuntu" {
+        most_recent = true        #terraform will search for most recent ubuntu images
+
+        filter {
+            name   = "name"
+            values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
+        }
+
+        filter {
+            name   = "virtualization-type"
+            values = ["hvm"]          #hardware virtual machine
+        }
+
+        owners = ["099720109477"] # Canonical Linux Image owner ID
+    }
+
+    resource "aws_instance" "web" {
+        ami            = data.aws_ami.ubuntu.id   # reference of data block have name ubuntu
+        instance_type  = "t3.micro"
+
+        tags = {
+            Name = "HelloWorld"
+        }
+    }
+
+Note : If we create EC2 Instance without providing Security Group, Key pair instance type than
+       Elastic Ip will not assign, key pair will not assign, subnet and vpc will be default, Security Group Default.
+
+Note : We can Copy terraform code for any resource that we can to create on Any cloud, as of now we have AWS.
+https://www.registry.terraform.io/providers/hashicorp/aws/latest/docs
+
+
+----------How to create key pair?
+
+public key creation :
+    login to linux machine : ssh-keygen
+    Enter the file in which to save key : (/root/.ssh/id_rsa) : key_pair_via_terraform
+    Enter the passphrase:  XXXXXXXXXX
+    Enter the same passphrase again : XXXXXXXXXX
+
+    Now we can see key_pair_via_terraform.pub file i.e the public file. copy the key content and paste it under tag
+public_key
+
+    provider "aws"{
+        region     = "us-west-2"              The region where we want to set up our infrastructure
+        access_key = "my-access-key"
+        secret_key = "my-secret-key"
+    }
+
+    resource "aws_key_pair" "key_pair_terraform" {
+        key_name = "key_pair_terraform"
+        public_key = "ssh-rsa dbbcoindakbcobabcnisabcnoacnsaoicsnaoicsndaoucibc"     we need to create this key using
+ssh-keygen command
+    }
+
+----------How to Create EC2 Instance
+
+    resource "aws_instance" "Ec2_Instance" {
+        ami            = ami-09833628u92iu792     # reference of data block have name ubuntu
+        instance_type  = "t3.micro"
+        tags = {
+            Name = "HelloWorld"
+        }
+        key_name       =   aws_key_pair.key_pair_terraform.id               #Reference to Keypair resource creation block
+        vpc_security_group_ids = [aws_security_group.Security_Group_Terraform]   #Reference to Security group resource
+creation block
+    }
+	
+	
+----------How to create Elastic IP using terraform
+
+    resource "aws_eip" "Elastic_IP" {
+        instance = aws_instance.Ec2_Instance.id
+        vpc      = true
+    }
+
+----------How to Create VPC
+
+    resource "aws_vpc" "aws_vpc_terraform"   {         or we can use default instead of aws_vpc_terraform, so default
+VPC will create
+        cidr_block = "10.0.0.0/16"            //classless interdomain routing
+        tags {
+            Name = "Custom VPC"
+        }
+    }
+
+    resource "aws_default_vpc" "default" {
+
+        tags{
+            Name="Default VPC"
+        }
+    }
+
+----------How to create Security group
+
+    resource "aws_security_group" "Security_Group_Terraform" {
+        name = "Security_Group_Terraform"
+        description = "Allow TLS inbound Traffic"
+        vpc = aws_vpc.aws_vpc_terraform.id                          aws_vpc_terraform is custom vpc that we need to create prior
+
+        ingress {
+            description = "TLS for VPC"
+            from_port   = 443
+            to_port     = 443
+            protocol    = "tcp"
+    }
+	
+    cidr_block = [aws_vpc.aws_vpc_terraform.cidr_block]
+
+    }
+
+    egress {
+        from_port   = 0                 0 mean all port numbers
+        to_port     = 0                 0 mean all port numbers
+        protocol    = "tcp"             or "-1" for all type of ports
+        cidr_block  = ["0.0.0.0/0"]
+    }
+    tags{
+        Name = "Allow TLS"
+    }
+}
+
+resource "aws_ebs_volume" "volume"{
+    availability_zone="us-west-2a"
+    size=40
+    tags={
+        name="EBS Volume"
+    }
+}
+
+-------------------------------Lecture 5
+
+terraform import command : 
+
+terraform import resource_type.resource_name resource_ID
+
+example : terraform import aws_instance.web i-08a123456789abcd1			//this will import Ec2 instance in tfstate file.
+
+----------How to create AMI via terraform
+
+    resource "aws_ami" "aws_ami_terraform" {
+
+        name                = "AMI VIA Terraform"
+        virtualization_type = "hvm"
+        root_device_name    = "/dev/xvda"
+        ebs_block_device {
+            device_name = "/dev/xvda"
+            snapshot_id = "snap-dsahkcbsdkdb"
+            volume_size = 8
+        }
+    }
+
+command -> terraform init -> terraform plan -> terraform apply -> terraform destroy
+
+----------How to copy AMI one region to other region
+
+Note : Here we need to give the authentication region will destination
+
+    provider "aws"{
+        region     = "us-west-2"              # Destination region where we want to set up our infrastructure
+        access_key = "my-access-key"
+        secret_key = "my-secret-key"
+    }
+
+    resource "aws_ami_copy" "aws_ami_copy_terraform" {
+        name                 = "aws_NEW_ami_copy_terraform"           Name of AMI in other region
+        description          = "Copy of AMI"
+        source_ami_id        = "ami-cacbasicbsaiuc8776"
+        source_ami_region    = "us-east-1"
+        tags{
+            name="AMI In new region"
+        }
+    }
+	
+	Similarly we can copy the terraform code from terraform website for any resource
+
+-> aws_ami_from_instance
+-> ami_launch_permission    to give permission on ami to other aws account, after which that user will able to see our ami
+into his account
+
+-------------------------------Lecture 8
+
+Terraform Variable : instead of writing one text multiple time, we use to declare variable for any declaration of text.
+
+How to declare variable :
+
+variable "InstanceType" {
+    default = "t2.small"
+}
+
+variable "images" {
+    default = "ami-09833628u92iu792"
+}
+
+To call variable     : var.images  or var.security_group or var.type  etc
+
+resource "aws_instance" "first_instance" {
+    ami = var.images
+    instance_type = var.instanceType
+}
+
+Note : We can either create resource and variable in same file or we can create seperate file(variable.tf) for resource and variable.
+    But it is necessary it keep variable file and resource file at same directory. 
+
+Now we create variable file seperately variable.tf  (variable file name can be anything.tf but in same directory, terraform will
+automatically  detect the variable file.
+	
+	
+	Note : if we want that terraform ask the variable values at runtime, than keep the value in variable as blank. that terraform
+will ask the value after running the command -> terraform apply
+
+    variable "instanceType" {
+        default = ""
+    }
+
+    variable "images" {
+        default = ""
+    }
+
+Note : We can keep value and variable in seperate file as well, for which we need to create values file with extention of .tfvars
+only
+Now create variable file with extention .tf and values file with extention of .tfvars and keep the value of variable file as blank.
+
+Generally, the below methods of terraform code is use to override the variable file values with .tfvars file values.
+if we keep different values in both variable file and .tfvars file than, terraform will take values from .tfvars file only
+other use is we can keep default values in variable file and desired values .tfvars file
+
+->   variable.tf                                            -> values.tfvars
+     variable "instanceType" {                               instanceType=t2.micro
+         default = ""                                        images=ami-09383628u92iu792
+     }
+
+     variable "images" {
+         default = ""
+     }
+
+Note : If we want that terraform take specific file for variable values i.e .tfvars file than need to pass a parameter in terraform
+plan command
+    We can't declare multiple value for one variable in terraform. But if we have variable and value in same file no need
+to specify, because if we are creating seperate
+    value file, than we can create it for different environment and can pass specific file for specific environment.
+
+command -> terraform plan -var-file="demo.tfvars"
+    terraform plan -var="instance_type=t2.nano" -var="image=ami-09383628u92iu792" //these variable will override
+	
+
+-------------------------------Lecture 9
+
+Data type in Variables
+There are Four type of datatype exist in terraform, and default datatype is String
+    String
+    Number
+    list
+    map
+
+provider "aws" {
+    region     = ""
+    access_key = ""
+    secret_key = ""
+}
+
+variable "ELBName" {
+    type=string
+}
+
+variable "AvailabilityZone" {
+    type=list          // Only in case of String we can omit mentioning the datatype, but for other data type it is
+mandatory to declare.
+    default=["us-east-1a","us-east-1b","us-east-1c"]
+}
+
+variable "timeout" {
+    type=number
+}
+
+calling of above variable
+
+resource "aws_elb" "Availability_Zone"{
+    name=var.ELBName
+    availability_zone=var.AvailabilityZone
+}
+
+Note : while running the terraform apply command, system will ask the value for above mentioned variable ELB variable
+name
+
+
+How to Use List for multiple values
+
+variable "instanceType"{
+    type=list
+    default=["t2.micro","t2.medium","t2.small","DEV","Test"]
+}
+
+Calling of List value
+
+resource "aws_instance" "Dev-Team"{
+    ami="ami-28e71kjbcjkdznbk"
+    instance_type=var.instanceType[0]
+}
+
+resource "aws_instance" "Test-Team"{
+    ami="ami-278932kjsciabvisd"
+    instance_type=var.instanceType[1]
+    tags = {
+        Name=var.instanceType[3]
+    }
+}
+
+How to Use MAP Datatype
+
+variable "Map-Variable" {
+    type=map
+    default={
+        us-east-1a="t2.micro",
+        us-east-1b="t2.medium",
+        us-east-1c="t2.small"
+    }
+}
+
+Calling of Map Variable
+
+resource "aws_instance" "Dev-Team"{
+    ami="ami-28e71kjbcjkdznbk"
+    instance_type=var.Map-Variable["us-east-1a"]   // Now By getting us-east-1a system will get to know that it need to
+create
+                                                    aws ec2 instance of map key value us-east-1a ie t2.micro
+                                                    and t2.micro instance type will create.
+}
+
+
+-------------------------------Lecture 10
+
+Count : the count parameter is use to reduce redundancy. if we want to create one resource multiple time than, we can use
+count keyword
+    by passing the value of count as number of times we have to create resource.
+
+Example
+
+resource "aws_instance" "Ec2_instance" {
+    ami="ami-678hvcuisd"
+    instance_type="t2.micro"
+    count=5                 // by providing count as 5, terraform will create 5 instance of t2.micro type.
+    tags= {
+        name="dev.${count.index}" // count.index will give the index value and append it to name dev like dev.0, dev.1,
+dev.2 so on.
+    }
+}
+
+Note : when we use count parameter, it will create instance of name like Ec2_Instance[0], Ec2_Instance[1], Ec2_Instance[2],
+Ec2_Instance[3] etc
+
+To provide Custom name,
+
+variable "instanceTag" {
+    type=list
+    default= ["Dev","Test","UAT","Prod"]
+}
+
+resource "aws_instance" "Ec2_instance" {
+    ami="ami-678hvcuisd"
+    instance_type="t2.micro"
+    count=5                 // by providing count as 5, terraform will create 5 instance of t2.micro type.
+    tags= {
+        name= var.instanceTag[count.index] // count.index will give index value and Give it to list index value and Tag of each
+    }                                       Instance will be like DEV, Test, UAT, and Prod
+}
+
+If we Want to change instance type
+
+variable "InstanceType" {
+    type=list
+    default= ["t2.small", "t2.micro", "t2.medium"]
+	}
+
+variable "instanceTag" {
+    type=list
+    default= ["Dev","Test","UAT","Prod"]
+}
+
+resource "aws_instance" "Ec2_instance" {
+    ami="ami-678hvcuisd"
+    instance_type=var.InstanceType[count.index]          //This loop will run for Variable instance type
+    count=5
+    tags= {
+        name= var.instanceTag[count.index]               // This Loop will run for Variable instance Tag
+    }
+}
+
+-------------------------------Lecture 11 Condition Statement
+
+Here We will see, if we are taking input from user or command line, on the basis of our input we are going to create
+infrastructure.
+
+variable "instancetype"{
+    type=map
+    default=
+        dev= "t2.micro",
+        test= "t2.nano",
+        prod= "t2.small"
+}
+
+variable "image"{
+    type=list
+    default=["ami-456fghbfgt","ami-9765vhdgasvcga","ami-3245hbscbsabg"]
+}
+
+variable input{} // we are not providing any values here, so we terraform can ask for input from user.
+
+resource "aws_instance" "Dev"{
+    instance_type=var.instancetype["dev"]
+    ami=var.image[0]
+	count=var.input == "dev" ? 10 : 0          // this statement state that if the value of input is equal to dev than,
+                                          and terraform will create 10 instance otherwise it will create 0
+instance
+
+Note : As we are using (==) operator for getting the count parameter value. similarly we can use any operator like (+ , / , *)
+
+Now if we want to create resource any env by just providing the input like DEV, TEST, and Prod
+
+resource "aws_instance" "Dev"{
+    instance_type=var.instancetype["dev"]   //it will pick the instance type of t2.micro from above instancetype variable
+    ami=var.image[0]
+    count=var.input == "dev" ? 10 : 0
+}
+
+resource "aws_instance" "Test"{
+    instance_type=var.instancetype["test"]   //it will pick the instance type of t2.nano from above instancetype variable
+    ami=var.image[1]
+    count=var.input == "test" ? 5 : 0
+}
+
+resource "aws_instance" "PROD"{
+    instance_type=var.instancetype["prod"]   //it will pick the instance type of t2.small from above instancetype
+variable
+    ami=var.image[2]
+    count=var.input == "prod" ? 2 : 0
+}
+
+Note : As we can see the above count parameter have condition of matching dev,test, and prod. If the input matches with any
+resource
+    condition, that terraform will create resource in that specific env.
+
+If first time we provide input as dev than terraform will create 10 instance
+If after input value of dev, we again run terraform apply and give input as test, that it will destroy the 10 instance of DEV
+and  create 5 instance of test
+If after input value of dev, we again run terraform apply and give input as prod, that it will destroy the 5 instance of DEV
+and  create 2 instance of prod
+	
+-------------------------------Lecture 12
+
+Local Value: Instead of providing tag to each resource seperately, we will declare a local tag variable, which we are going to
+use
+    for all resource.
+
+locals {
+    common_tag = {                     // This name of local value i.e common_tag can be anything that we want.
+        Name="UK-Project"              // Now this Tag we can call in all the resources
+        owner="prashant chaudhary"
+    }
+}
+
+resource "aws_instance" "Ec2-Instance" {
+    ami="ami-45768qfhbscdjbc"
+    instance_type="t2.micro"
+    tags = local.common_tag
+}
+
+resource "aws_vpc" "VPC" {
+    cidr_block="10.0.0.0/16"
+    instance_tenency="default"
+    tags = local.common_tag
+}
+
+resource "ebs_volume" "EBS Disk" {
+    availability_zone="us-east-1a"
+    size="100"                         // EBS Volume Size 100GB
+    tags=local.common_tag
+}
+
+-------------------------------Lecture 13 Output Value
+
+Output Values : Using this we Can retrieve the values of resource
+
+Note : whenever We start working on terraform, and run terraform plan command, than terraform creates a file on the same
+directory called
+    terraform.tfstate -> contains all the information about the resource that is been created using terraform.
+
+We can create a seperate block of output for any resource as below
+
+resource "aws_instance" "dev" {
+    ami="ami4322hbbhghjb"
+    instance_type="t3.micro"
+    tags = {
+        Name="Output Value tag"
+    }
+}
+
+output "instance_info" {                     // after running the terraform apply, this output block will provide all the info
+    value=aws_instance.dev                   value=aws_instance.dev instance created.
+}
+
+Note : If we want any specific values of resources than we need to specify it into output block.
+
+output "instance_info" {
+    value=aws_instance.dev.id                // it will give the instance ID
+    value=aws_instance.dev.ami               // it will give only ami ID
+    value=aws_instance.dev.arn               // it will print arn of resource
+    value=aws_instance.dev.cpu_core_count
+    value=aws_instance.dev.private_dns
+    value=aws_instance.dev.public_ip
+}
+
+Note: The Value we are fetching, we can get these attribute from terraform resource on website under attribute reference,
+similarly we can fetch for vpc etc.
+
+resource "aws_vpc" "main_vpc" {
+    cidr_block="10.0.0.0/16"
+    instance_tenancy="default"
+    tags={
+        name="main_vpc"
+    }
+}
+
+output "vpc_info"{
+    value=aws_vpc.main_vpc.cidr_block        // will get CIDR Block value after terraform apply
+    value=aws_vpc.main_vpc.instance_tenancy  // will get instance_tenancy value after terraform apply
+}
+Note : if we want to see, all the output values after resource has been created than,
+    run -> terraform output          //command will give the output of all the resource which was created using aws.tf file
+    run -> terraform output -json     // output will be in the json format
+
+    if we want to see individual values, than use
+    terraform output vpc_info        //We need to pass the output variable name.
+
+sensitive : it hide the value of sensitive information
+
+    output "vpc_id"{
+        value=aws_vpc.main_vpc.id        // will get CIDR Block value after terraform apply
+        sensitive=true                   // hide the value of sensitive information
+    }
+
+    output "vpc_cidr"{
+        value=aws_vpc.main_vpc.cidr_block   // will get CIDR Block value after terraform apply
+        sensitive=true                      // hide the value of sensitive information
+    }
+
+Note : the terraform output command will show it as hidden until we search for that sensitive attribute individually.
+
+---------- We can import available terraform projects via git as well.
+
+command -> yum install git               (install GIT Package)
+command -> git clone https://github.com/hashicorp/learn-terraform-outputs.git  (import projects)
+
+above command will bring the below files in directory
+    main.tf
+    modules
+    output.tf
+    variable.tf
+
+Note : main.tf do not have access-key and secret-key, we need to provide it manually
+
+-------------------------------Lecture 14  State Management
+
+Note : Whenever the project of terraform starts, we will run the three command init, plan, apply, destroy and after running the
+		apply command
+		
+		it will first check the resource file i.e resource.tf available in which directory and it will search for terraform.tfstate file
+		in same directory.
+		if terraform do not find the terraform.tfstate file that it will create the resources on aws cloud, because whenever
+	
+we deploy the project first time than obviously it will not find any .tfstate file
+
+After creating the resources for the first time, terraform will gather all the information of resources and create .tfstate
+file
+
+Now, .tfstate file exist in directory
+
+if someone again run the terraform apply command than terraform will compare the resource file and .tfstate file, and if
+no change find
+    than it will show terraform up to date.
+
+but if someone add new resource and than run terraform apply, than terraform will check the changes and create the new
+resources
+    or it will update the old resources and update the same in .tfstate file
+
+whenever terraform will make change in architecture, it will keep the backup of old .tfstate.backup file
+
+Issue Arise : let there are two engineer vikas and vipin working on same project of terraform. let vikas started the project so
+vikas has
+    terraform.tfstate file in his local, but now vipin wants to do some update in architecture, if vipin run the
+apply command without terraform.tfstate file than terraform will create infrastructure again. So he need to have
+terraform.tfstate file copy
+    in his local too. but again vikas need to do something on infrastructure and he do not have latest updated
+file than
+    he will destroy the resource created by vipin.
+
+Solution : configure the terraform on shared directory using NFS, SAMBA, EFS etc. or create account on github
+    OR
+    last solution is will store the terraform.tfstate file will store on cloud like AWS S3 and enable the versioning
+    we will define the tfstate file is at S3 bucket. No Tension of Push and Pull form GIT
+    We Need to use DynamoDB for using the file lock feature, so that only one can work at a time on terraform.
+
+Note : If we need to create two env. staging and prod, than we will create two different directory of terraform of name
+    staging and prod. or We will use concept of workspace.
+
+Note : We can destroy an individual resource from cloud using terraform as well using the below command
+    terraform destroy -target=resource_type.resource_name
+    terraform destroy -target=aws_instance.Ec2_Instance               //command
+	
+	
+-------------------------------Lecture 15
+
+Terraform State Management Lab
+
+1. Create aws.tf a resource creation file inside the project directory, and there is nothing except this file in the directory
+2. Run terraform init  on current directory
+3. Run terraform plan  (plan command check the aws.tf file and its syntax and show what will create and what will destroy)
+4. Run terraform apply  (Now this command will create resources and get the resources information and keep it in aws.tfstate file)
+5. Now whenever next time terraform apply will run, terraform will compare the aws.tf and aws.tfstate file and create one more file
+    aws.tfstate.backup file  and we can even validate the difference of aws.tfstate.backup and aws.tfstate file
+
+Now we want that aws.tfstate should not store at local, it must store at remote storage. For this we need to define this in
+aws.tf file only
+as describe below. and run terraform apply and the aws.tfstate file will create on S3 bucket.
+
+aws.tf
+    provider "aws"{
+        region =""
+        access-key=""
+        secret-key=""
+    }
+
+    terraform {
+        backend "s3" {
+            bucket="mybucket"                //S3 Bucket name
+            key = "/mybucket/sanjay/terraform/cloud"     //specific path where we want to keep aws.tfstate file
+in S3 bucket
+            region ="us-east-1"
+            access-key=""
+            secret-key=""
+            dynamodb_table="dynamodb_table_name"         // If we want lock on file
+        }
+    }
+
+    resource "aws_instance" "ec2_instance"{
+        ami=""
+        instance_type="t2.small"
+        tags={
+            name="My Ec2 Instance"
+        }
+    }
+	
+	}
+
+Note : Now if someone else want to make change in infrastructure than he dont need to keep aws.tfstate file in his local.
+    he can directly make the changes
+    after running above aws.tf file, we can see the .tfstate file created S3 bucket but .tfstate file will not be available in
+terraform host machine. Now whenever we make change in aws.tf file and run aws.tf apply command we can see the
+.tfstate file
+    get updated in S3 bucket as well, we can every single version of tfstate file.
+
+Locking Feature : if two or more run the terraform apply command simultaneously than terraform will accept command from
+both users.
+    so we use locking, due to which only one user can make the change at a time by taking a lock on
+aws.tfstate file
+    for which we will use dynamodb
+
+-------------------------------Lecture 16
+
+Till now, whenever the change are been made, it is been made directly in production. let suppose if anything wrong changes
+made by someone,
+    and due to that change production env get down than? so we will introduce staging environment
+
+Jugad Solution : We will create to different directory inside S3 bucket and inside local directory as well named as Prod and
+Stage
+    inside aws.tf file we will change the key value that is actually the path to aws.tfstate file. And need to move aws.tf
+file from
+    stage to prod or prod to stage on local terraform directory.
+
+    terraform {
+        backend "s3" {
+            bucket="mybucket"                //S3 Bucket name
+            key = "/mybucket/stage or "/mybucket/prod"          //specific path where we want to keep
+aws.tfstate file in S3 bucket
+            region="us-east-1"
+            access-key=""
+            secret-key=""
+            dynamodb_table="table"           // If we want lock on file
+        }
+    }
+
+Terraform solution : Use Workspace concept, it will automatically logically connect stage and prod seperately and we dont
+need to create
+    different directory like stage and prod in S3 and local as well, we dont need to do jugad like before.
+	
+it will create different work space on s3 bucket that we create on local
+
+commands
+terraform workspace list (list all the workspace)
+terraform workspace show (show current workspace we are)
+terraform workspace --help
+
+terraform workspace new prod                 //create new workspace
+terraform workspace new stage
+terraform workspace select prod              // change workspace
+terraform workspace delete prod or stage     //delete workspace
+
+Note : terraform do not allow to delete any workspace that have any resource created, only empty workspace can be
+created.
+    or user flag -force to delete workspace forcefully.
+    We can not delete the current workspace, you need to come out and than we can delete.
+    We need to delete the resources created in workspace first, than we should create the workspace, because if we
+delete workspace
+    without deleting its resources than we need to delete resources manually which is going to be tough.
+
+Note : when we create work space concept in terraform, we can see s3 bucket now have two different directory created
+with name
+    stage and prod. And we can see the same file aws.tf for both workspaces from terraform host machine.
+
+-------------------------------Lecture 17
+Terraform Provisioner : Using provisioner, we can provision any application or any task that we want to perform during
+    the resource creation using terraform
+
+    provisioner "remote-exec" {
+        inline=[
+            "yum install httpd"
+            "systemctl start httpd"
+            "systemctl enable httpd"
+        ]
+    }
+
+Type of provisioner
+
+local-exec provisioner : this provisioner will run on local machine
+remote exec provisioner : this provisioner will run on remote machine only
+file provisioner : sharing file from local to remote machine using file provisioner.
+    file provisioner can only copy file form local to remote in /tmp directory only
+	
+and than we can use remote exec provisioner to copy file from one path to other path of
+remote machine
+
+Note: connection between remote and local machine will be establish via
+    for window remote : winrm
+    for linux remote : ssh
+
+    login on remote machine will be done using "connection" parameter
+
+-------------------------------Lecture 18 Provisioner Lab
+
+provider "aws" {
+    region = "us-east-1"
+    access-key = ""
+    secret-key = ""
+}
+
+resource "aws_key_pair" "" {
+    key_name ="developer"
+    public_key ="ssh-rsa ASHJGdsbkhjnjnvsvsfvdv"
+}
+
+resource "aws_instance" "web" {
+    ami="ami-567bjdncskvbhfk"
+    instance_type="t3.small"
+    key_name="developer"
+
+    tags={
+        Name="Prod"
+    }
+}
+
+    provisioner "file" {     // using file provisioner transferring the key to remote machine so that into machine and
+perform our task
+        source= "/root/projectA/index.html"          // fully qualified path of file want to transfer
+/root/projectA/index.html
+        destination="/tmp/index.html"                 // /tmp/index.html path to remote machine
+    }
+	
+	provisioner "remote-exec" {
+    inline = [
+        "sudo yum install httpd -y",  //to install http server need to use sudo, because ec2-user is not the admin user
+        "sudo systemctl start httpd",
+        "sudo systemctl enable httpd"
+        "sudo cp -rvf /tmp/index.html /var/www/html"          // copying index.html from remote /tmp to http server /html
+directory
+        "sudo systemctl restart httpd"]
+}
+
+connection {
+    host= self.public_ip          //it will pick the Ip of ec2 instance going to create
+    user="ec2-user"
+    type="ssh"                    // for windos use winrm
+    password=""                   //if we have password configured for user ec2-user
+    or
+    private_key= file("./developer") //if we have configure machine authentication via key, and developer is the key of
+machine in pwd
+}
+
+-------------------------------Lecture 19 require Ansible
+
+Local exec provisioner: this provisioner is used to run command on local machine of terraform workstation
+    declare under resources
+
+resource "aws_instance" "web" {
+    ami="ami-567hjdncksvbhfk"
+    instance_type="t3.small"
+    key_name="developer"
+
+    tags={
+        Name="Prod"
+    }
+
+    provisioner     "local-exec"{
+        command= "echo ${aws_instance.web.public_ip} >> /tmp/cloudknowledge-ip" //this will get ip of machine
+in cloudknowledge-ip file
+    }
+}
+
+-------------------------------Lecture 20 Packer
+
+Packer : it is require to create the image of system
+
+Problem : As There are lots of tools and cloud are available which provide image creation service but on AWS cloud we can
+create image of
+    AWS VM only, on Azure we can create Azure VM only. so all have dependency.
+    But terraform provide the solution to create image of any vm of any cloud like aws, azure, gcp etc.
+
+1. We need to install terraform packer software on local
+2. Need to write configuration file for image creation (extention must of two type : json or hcl (harshicorp configuration
+language)
+3. In configuration file we need to give like builders(source ami), and provisioner.
+    it will create the vm of source ami and create the image of newly created vm and destroy the vm
+
+Installation and use of packer
+
+1. Google -> download packer for linux os
+2. unzip packer_1.7.0_linux_amd64.zip
+3. mv packer /usr/bin               (/usr/bin is available in $PATH by default
+4. hit -> packer --help            (show all the packer command)
+5. create a file awspacker.json
+
+    {
+        "builders":[ {
+            "type": "amazon-ebs",
+            "access-key":"",
+            "secret-key":"",
+            "region": "us-east-1",
+            "source_ami": "ami-785hjgcajbsa"  //any image image available on AWS cloud.
+            "instance_type": "t2.micro",
+            "ssh_username": "ec2-user",
+            "ami_name": "cloudknowledge-ami"
+        }
+        ]
+    }
+
+command: packer validate awspacker.json    // this command help to get know that there is no error in file
+command: packer build     awspacker.json
+command: packer hcl2_upgrade awspacker.json    // it will create another file of hcl extention
+
+command: packer build awspacker.json.pk.hcl          // it will create image using hcl file
+
+-------------------------------Lecture 22
+
+Packer authentication methods: whenever we create image from any cloud provider, we need to authenticate on that cloud
+provider.
+    so here we learn about those authentication methods.
+
+Note : in Lecture 21, we have provided the access-key and secret-key hard coded and for production environment it is not
+right.
+
+normal methods: set secret-key and access-key in environment variable
+    use variable file seperately to provide access-key and secret-key
+    hardcode of access-key and secret-key
+    pass the access-key and secret-key on cli while build command of packer
+
+1. Variable methods
+
+    {
+        "variables": {
+            "aws_access_key": "",
+            "aws_secret_key": ""
+        },
+
+        "builders": [   {
+            "type": "amazon-ebs",
+            "access_key": "{{user `aws_access_key`}}",   //calling access key as a variable
+            "secret_key": "{{user `aws_secret_key`}}",   // calling secret key as a variable
+            "region": "us-east-1",
+            "source_ami": "ami-785hjgcajbsa"
+            "instance_type": "t2.micro",
+            "ssh_username": "ec2-user",
+            "ami_name": "cloudknowledge-ami"
+        }
+        ]
+    }
+
+create another file variable.json
+{
+    "aws_access_key":"dsajbchakhjcasicha"
+    "aws_secret_key":"cagvcjsabciacbscaa"
+}
+
+command: packer build awspacker.json
+
+Note : we can pass a runtime flag -var-file for passing the variable values . so it will not read the variable from awspacker.json
+file
+
+command :- packer build -var-file=variable.json awspacker.json  // passing variable.json as run time for access and secret-key
+    it will not even read the variable tag of
+build file
+
+2. How to set access-key and secret-key as environement variable for authentication
+
+    export AWS_ACCESS_KEY=sdbckdjcnbkdajckjdabc
+    export AWS_SECRET_KEY=ksdhbidcdkkdsjkjvsdbnk
+
+    And now call this env variable in awspacker.json variable tag as below.
+
+    {
+        "variables": {
+            "aws_access_key":"{{env `AWS_ACCESS_KEY`}}",
+            "aws_secret_key":"{{env `AWS_SECRET_KEY`}}"
+        },
+
+        "builders": [   {
+            "type" : "amazon-ebs",
+            "access-key":"{{user `aws_access_key`}}",   // we are passing the environment variable here for access
+and secret-key
+            "secret-key":"{{user `aws_secret_key`}}",
+            "region": "us-east-1",
+            "source_ami": "ami-785hjgcajbsa"
+            "instance_type": "t2.micro",
+            "ssh_username": "ec2-user",
+            "ami_name": "cloudknowledge-ami"
+        }
+    ]
+	}
+
+Note : if we want that env variable must reflect to all terminals, than make the entry of env variable in .bashrc
+
+3. We can also pass the access and secret-key on cli while build command instead of env variable of packer as below, we
+should use this method when IAM user access and secret-key are highly authoritative
+
+packer build -var aws_access_key=dbksdjbvksdbvksd -var aws_secret_key=vhjybvhbKSDvbk awspacker.json
+
+    // the variable aws_access_key and aws_secret_key must be same as we define in awspacker.json
+
+4. Role Concept (Most secured): we will use cloud IAM role for authentication
+    create an IAM role in aws cloud. (here we have provided admin full access to new role created)
+    go to action of the terraform instance -> go to security -> modify IAM role
+    assign newly created IAM role to terraform instance
+    Now we can run, the command -> packer build awspacker.json
+
+-------------------------------Lecture 23
+
+Packer provisioners : it is used to update or modify the image that we created.
+    we need source image first than let we configure any application on the source image and than we
+want to take image
+    or any change under the vm like need to configure any other application than every time we are
+altering the source image
+    so it is better to user packer provisioner so that we can alter the image without actually accessing the
+VM
+
+Template
+----------------
+| Builder (Source Image Provider|
+|                               |
+| provisioner                   |
+|                               |
+| post proces                   |
+---------------------------------
+
+{
+    "builders": [ {
+        "type": "amazon-ebs",
+        "access-key": "fhbhnhghjbhj",
+        "secret-key": "fyghjbnhuygg",
+        "region": "us-east-1",
+        "source_ami": "ami-785hjgcajcbsa"
+        "instance_type": "t2.micro",
+        "ssh_username": "ec2-user",
+        "ami_name": "cloudknowledge-ami"
+    }
+    ],
+
+    "provisioner": [
+        {
+            "type":"file",
+            "source": "/cloudknowledgeindia",
+            "destination": "/tmp/"
+        }
+    ]
+}
+
+Note : Now when we build this, we can see the new image created in AWS, and after creating vm from that image
+in /tmp/ path we can see cloudknowledgeindia file there
+
+-------------------------------Lecture 24 Shell provisioner
+
+{
+    "builders": [ {
+        "type": "amazon-ebs",
+        "access-key": "fhbhnhghjbhj",
+        "secret-key": "fyghjbnhuygg",
+        "region": "us-east-1",
+        "source_ami": "ami-785hjgcajcbsa"
+        "instance_type": "t2.micro",
+        "ssh_username": "ec2-user",
+        "ami_name": "cloudknowledge-ami"
+    }
+    ],
+	
+	"provisioner":[
+    {
+        "type":"file",
+        "source":"/cloudknowledgeindia/",   //only copy the file inside cloudknowledgeindia directory
+        similarly if we use ./cloudknowledgeindia than it will
+copy the directory
+        "destination":"/tmp"                // in file provisioner we can copy file only in /tmp directory
+    },
+
+    {
+        "type":"shell",
+        "inline":[
+            "sleep 30",
+            "sudo yum update -y",
+            "sudo yum install httpd -y",
+            "sudo cp -rvf /tmp/* /var/www/html",
+            "sudo service httpd start",
+            "sudo chkconfig httpd on"
+        ]
+    },
+
+    {},                                 // second next provisioner
+    {},                                 // third provisioner
+]
+}
+
+-------------------------------Lecture 25, and 26
+Ansible provisioner : Will discuss it further after completing ansible
+
+-------------------------------Lecture 27
+Provisioner Timestamp: If we re run one packer file when we make any change in packer file, than it will give error of naming.
+    so we use time stamp function so that if we run the same packer file on different time stamp than
+it will not throw
+    error.
+
+{
+    "builders":[ {
+        "type" : "amazon-ebs",
+        "access-key": "fhbhnhghjbhj","secret-key": "fyghjbnhuygg",
+"region": "us-east-1",
+"source_ami": "ami-785hjgcajbsa"
+"instance_type": "t2.micro",
+"ssh_username": "ec2-user",
+"ami_name": "cloudknowledge-ami-{{timestamp}}"
+}
+}
+}
+
+Note : now ami name will be like  cloudknowledge-ami-1620807975
+
+-------------------------------Lecture 28
+Multiple Builder in packer template : it is required when we need to create multiple image form one template
+
+Note : If we want to run the command which is in provisioner for specific builder than we need to use "only" and provide
+specific builder
+    name
+
+{
+    "builders":[ {
+        "name": "AWSCloud"
+        "type": "amazon-ebs",
+        "access-key": "fhbhnhghjbhj",
+        "secret-key": "fyghjbnhuygg",
+        "region": "us-east-1",
+        "source_ami": "ami-785hjgcajbsa"
+        "instance_type": "t2.micro",
+        "ssh_username": "ec2-user",
+        "ami_name": "cloudknowledge-ami-{{timestamp}}"
+    },
+    {
+        "name": "AzureCloud"
+        "type": "amazon-ebs",
+        "access-key": "fhbhnhghjbhj",
+        "secret-key": "fyghjbnhuygg",
+        "region": "us-east-1",
+        "source_ami": "ami-785hjgcajbsa"
+        "instance_type": "t2.micro",
+        "ssh_username": "ec2-user",
+        "ami_name": "cloudknowledge-ami-{{timestamp}}"
+    },
+	{
+    "name": "GCPCloud"
+    "type" : "amazon-ebs",
+    "access-key": "fhbhnhghjbhj",
+    "secret-key": "fyghjbnhuygg",
+    "region": "us-east-1",
+    "source_ami": "ami-785hjgcajbsa"
+    "instance_type": "t2.micro",
+    "ssh_username": "ec2-user",
+    "ami_name": "cloudknowledge-ami-{{timestamp}}"
+},
+
+"provisioner": [
+    {
+        "type":"shell",
+        "only":["AWSCloud","AzureCloud"]   //we want to run the below provisioner commands for
+AWSCloud and AzureCloud
+        "inline": [
+            "sleep 30",
+            "sudo yum update -y",
+            "sudo yum install httpd -y",
+            "sudo cp -rvf /tmp/* /var/www/html",
+            "sudo service httpd start",
+            "sudo chkconfig httpd on"
+        ]
+    }
+]
+}
+
+-------------------------------Lecture 29
+If we want to run specific command of provisioner or want to overwrite any specific command than.
+one we can create multiple provisioner or we can use a seperate parameter "override" after provisioner
+
+"override":{
+    "AWSCloud" {
+        "inline": [
+            "sleep 30"
+            "sudo yum update -y"
+            "sudo yum install tree -y"   // if we check here third line is overriding the 3rd line of provisioner declared above.
+    }
+}
+}
+
+Note : We need to write all line till we want to override
+
+-------------------------------Lecture 30
+
+pause_before parameter : we use this parameter to take a pause before the execution of inline commands of provisioner
+
+    "provisioners":"shell"
+    "pause_before":"60s",
+    "inline":[
+        "sleep 30",
+        "sudo yum update -y",
+        "sudo yum install httpd -y"
+    ]
+
+Note : similarly we have pause_after , packer will take pause after running provisioner
+    "max_retries" : retry to run command if command get failed, default value it is 0
+    "timeout": "60s" sometime there are some command which need input, so if command didnt get input for so long,
+it should not
+    be wait for lifetime, the command must stop after certain time
+		
+
+
+
+
+Terraform Modules: Terraform module is basically a container for a set of Terraform configuration files that are grouped together
+				to manage a piece of infrastructure as a reusable unit.
+				
+				It is similar as a function in any programming language where repeating the same Terraform code again and again,
+				you put it into a module and call it whenever you need it.
+
+Any terraform project that we write as a code is a module in itself, that we can use to rebuild an infrastructure on different cloud
+
+	root module: where run out terraform init, plan, and apply command. all the module written under root is called child modules.
+	
+	By default, when we run terraform plan command it look for file in current directory only which is level zero, and if we have create another nested directory called named as module
+	than we need to call it in terraform file at level zero.
+	
+	Calling of module from level zero
+	
+	instance.tf
+		
+		module "mywebserver"{
+			source='./modules/webserver'			//where mywebserver is directory at level 1, which is a nested directory or module. under which we will create a different .tf file
+			image_id="svdsvsbsb"
+			instance_type="t2.small"			//instead of values we can pass the variable from the variable.tf file which is at level zero of root module.
+			key_name="${var.key_name}"
+			instance_type="${var.instance_type}"
+			image_id=${var.image_id}
+		}
+
+Note : when we run terraform init command, it will initialize the variable for current directory only, so for modules, we need to define in the module block seperately.
+	
+	We can get the output from the module as well, module returns 
+	
+	we can write the output.tf file in child module and output block in root directory to get it print.
+		
+		output.tf file in child module
+			
+			output publicIP{
+				value=aws_instance.web.public_ip
+			}
+			
+			
+		
+		
+		
+		module "mywebserver"{
+			source='./modules/webserver'			//where mywebserver is directory at level 1, which is a nested directory or module. under which we will create a different .tf file
+			image_id="svdsvsbsb"				//passing these value to child module
+			instance_type="t2.small"				//passing this value to child module
+			key_name="${var.key_name}"
+			instance_type="${var.instance_type}"
+			image_id=${var.image_id}
+		}
+	
+	
+		output 	mypublicIP {
+			
+			value = module.mywebserver.publicIP			//value coming from child module
+		}
+	
+	
+Note : Module are like we can use the existing written code of infrastructure by someone else by just providing the input values of resources. And can take the output values from
+		newly create infra, .
+		We can take the source from GIT Repo as well.
+
+Note : If we want to use module from GIT Repo than, we need to provide the GIT path of Code in source value
+		"git::https://github.com/terraform/modulecode"
+
+Terrafrom backend: creating .tfstate from on S3 bucket
+
+
+
+Terraform Deployment: Either we can do it via codepipeline of AWS or Using Jenkins
+
+Code Commit
+Code build
+Code pipeline
+
+So for excuting terraform stages like init, plan, apply or destroy we need to use codebuild jobs using buildspec.yml file, and these jobs are going to run automatically using codepipeline 
+
+Consider a simple small  terraform project, contain main.tf, variable.tf etc, we need to create buildspec.yml files for any service like apply, plan, destroy
+
+Note : While creating a codebuild job in aws, we need to select the machin image using which the codebuild will create a container and perform the action that 
+		we specify in buildspec.yml file.
+		
+Note : AWS provides GIT service, AWS provides code commit service : we can create repository and get one URL for our repo.
+
+	 Commands: git init
+				git add .
+				git commit -m "initial commit"
+				git remote add origin repo_url
+				git push origin master 	(this will open a new window: it will ask login credentials)
+		
+Create one user in IAM, and assign codecommit permission
+get the user credentials and login to git window.
+after providing login credentials code is now pushed to GIT repo. we can see it on codecommit of AWS 
+
+
+Create IAM Role for Codebuild AWS Service and give admin permission to this role.
+
+
+Open CodeBuild Project -> Under this project Create Code build Jobs for all three stage : Plan, apply, destroy
+
+ -> create buildproject -> project name (terraform plan) -> provide terraform repository  (we just Created)
+			-> Select Image (AWS Managed or custom image )-> Select Ec2 or Lambda -> select OS -> Provide IAM Role. -> Provide the path to buildpsec file(from Repo)
+			-> store artifacts in S3
+			Create Code build
+			
+		
+		
+		
+Create Pipeline
+	
+	-> provide the source code provider. (AWS Code Commit, we created above)
+	-> provide repository name 
+	-> provide the build provider (Code build project we created above)
+	Now Create Pipeline
+	
+Edit pipeline and Add stages
+	
+	Stage 1: Getting the source code from code commit repo.
+	
+	Stage 2: Creating Plan (input artifacts is source artifacts)
+	
+	Stage 3: Creating Apply
+				create first stage as plan stage
+				create apply stage (Action name, Action provider i.e AWS Code Build)
+				input artifacts (here we are mentioning like artifacts are comming from older stage i.e plan stage)
+				project Name : select Code build of plan stage from drop down.
+				
+	stage 4: Destroy 
+			Add approval action (manual approval) 
+			Add Destroy Action 
+			
+After Defining all the stages, We can make the change in code commit repo of AWS, and when ever their will be any change than pipeline will get execute.
+
+
+Terraform Data Block
+
+A data block in Terraform is used to read information from existing resources or services, without creating or modifying them.
+
+resource block → creates/updates/deletes infrastructure.
+
+data block → only fetches information about something that already exists.
+
+Example: 
+
+Use of Existing VPC
+
+data "aws_vpc" "default" {
+  default = true
+}
+
+resource "aws_subnet" "example" {
+  vpc_id     = data.aws_vpc.default.id
+  cidr_block = "10.0.1.0/24"
+}
+
+Fetching Machine Image
+
+data "aws_ami" "amazon_linux" {
+  most_recent = true
+
+  filter {
+    name   = "name"
+    values = ["amzn2-ami-hvm-*-x86_64-gp2"]
+  }
+
+  owners = ["amazon"]
+}
+
+resource "aws_instance" "example" {
+  ami           = data.aws_ami.amazon_linux.id
+  instance_type = "t2.micro"
+}

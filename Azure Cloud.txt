@@ -1,0 +1,117 @@
+Azure Cloud (Second Largest Cloud)-------UDEMY
+
+What is Cloud computing ?? Why we need it??
+In the old Era, if any one have to setup a infrastructure for IT services than it need to have large number of resource to make it possible like
+Office space, Harware, More people to manage and lot of Capex (one time upfront expense)
+Recurring expense : Harware maintenance, electricity bill, employee salary.
+
+Cloud computing is a way to access all the service and resource over the internet instead of buy and manage it locally. we are actually renting the resource
+Resource like :  Computer harware, Disk drives, DNS Services etc.
+
+Three Models of Cloud
+IAAS, PAAS, SAAS
+
+Types: Public, Private, Hybrid
+
+
+
+--------------------------- Lecture 2
+Setup Azure Cloud account(We must have a Microsoft account created) 
+Use the link to create azure account : https://portal.azure.com 
+
+Azure provide 200$ or 19130 Rs of free credit to use, but still we need to provide the details of our credit or debit card, if we go beyond 200$ than it will charge from our card.it is mana
+it is mandatory to enable 2nd factor authentication on azure account.
+
+-> Now After Account creation, it is a time to become a global administrator.
+
+Search for EntraID ->  onleft panel expand "manage" -> Now click on Properties.
+
+Set the radio button to YES under "access management for azure resources".
+
+Click on Save
+
+Than SignOut and Signin Again to activate the Global Admin Permission.
+
+
+We can validate that we have enabled the MFA or not By Searching "Multifactor Auth Phase-1" and "Multi Facttor Authn phase-2"
+
+
+----------------------------Lecture 4 
+Azure Subscription: it is a way how we want to manage the expenditure of our azure services. It is mandatory for any service to linked with any of the subscription to get it created.
+					WHatever the services we use in Azure, we use it under subscription and, Each subscrption we create is linked with our credit card or debit card.
+					So the subscription collect all the billings of resource created under it and make it clear though our card.
+					
+Note : A subscription can have multiple resources under it.
+		We can have mulitple subscription under one account.
+		We can have multiple billing account in one azure account, so we can make of specific group from specific accouunt or card.
+			
+		It helps to keep the track of billing made by specific team or environment etc.
+		
+		
+
+------------------------------Lecture 5
+Resource Group: whenever we create any resource in azure than it is mandatory to create that resource under resource group.
+				once we create and assigned a resource group to the resources than that resource group need to attach with a subscription.
+				
+	
+Process : -> create Create Azure account -> Create Subscription -> Create Resource Group -> Create Resources like VM, Vnet etc.
+
+
+------------------------------Lecture 6
+Azure Cli : we have a icon of cli on the azure cloud dashboard.
+
+ex: az group create -l northeurope -n test-resource-group				//this command will create resource group on azure.
+
+	(azure cli) (resource creating)	(location) (name of resource)
+	
+other commands (Bash)
+	
+	az group list				//list all the resource group
+	az group list --query "[].Name:name, Location:location" --output table			//filter the output data and put it into table format
+	az group delete -n test-resource-group
+	
+	
+Powershell (have auto suggestion)
+
+
+--------------------------Lecture 7 
+
+Azure Storage account: Azure provide data storage account for data storage, it must be attached to a resource group.
+
+Type:
+
+BLOB: Object Storage for unstructured data (S3 Storage in AWS)
+File: SMB file based share (Shared Storage like NFS)
+Table: NoSQL Key Value storage (Like DynamoDB in AWS)
+Disk : Persistant storage for VMs
+
+
+Data Availability
+LRS : Locally Redundant Storage : 3 copy of data set with in a single data center. if single data center goes down than data will not be avialble. ( availability = 11 9's behind 99.)
+ZRS : Zero Redundant Storage : Data replicate to 3 different data center of 3 different availability zone. ( availability = 12 9's behind 99.)
+GRS : Geo Redundant Storage : Data replicate to two regions (primary and secondary), and data will have 3 copy in one availability zone or data center, that protect the data from natural disaster. (availability = 16 9's behind 99.)
+Geo Zone redundant storage : Primary will have 3 copy in 3 availability zone (each will have 1). (availability =16 9's behind 99.)
+	
+	
+Security of data:
+Access data via RBAC (Role based access control) : User will have to have permission or role that have permission to access that specific data.
+Encryption : enable encryption on data
+firewall : We can put a firewall in front of data that have some rule to access that data.
+Private endpoint: accessing the data without internet, through privat endpoint.
+
+Note: Storage account name should be unique, if someone in world has already have the name of storage account that you want to, than you will not be able to create with that name.
+
+
+For storing the data into the storage account, we need to have container that we can create using "Storage browser"
+and after creating a container we can drop our file there.
+
+
+Permission to storage account : we have "IAM access control" option to manage the access, here select the role and assigned it to user in our cloud account.
+
+
+Data retrieval : The way of retrieving  data according to its availability
+	
+	Hot : data is accessible very frequently
+	Cool
+	Cold
+	Archive

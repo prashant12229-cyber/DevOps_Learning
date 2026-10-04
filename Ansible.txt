@@ -1,0 +1,1622 @@
+Ansible
+
+Difference in Terraform and Ansible 
+Terraform is use to create infrastructure on different Cloud providers as a code. in AWS we have cloud formation, in Azure we have templates. 
+We can't use cloud formation on all cloud provider. we can say terraform is cloud independent IAAC language
+
+Ansible is an open-source automation tool mainly used for:
+Configuration management
+Server provisioning (creating user, changing passwords, directory setup etc, system updates)
+Application deployment
+Infrastructure as Code (IaC)
+
+Ansible(IAC) have the module using which we can create infrastructure on cloud as well. 
+but we use ansible for configuration management where terraform is for infrastructure creation.configuring infra mean Vm os, etc etc.
+
+
+a system admin or release engineer has a lot of daily repetitive tasks like creating the VMs, configuring them, migration of code, and application deployment 
+which is a little hectic task So a smarter way to achieve this is by scripting it. This means the script will take care of the building of the entire infra.
+
+Ansible is Agentless, means it is not require to install ansible on client machine.
+
+	
+--------------------------xml Extensible Markup Language (XML) file is similar astabular format data in Database. 
+<Mobiles>
+		<Mobile>
+			<name>Samsung</name>
+			<model>S3</model>
+		</Mobile>
+		<Mobile>
+			<name>OnePlus</name>
+			<model>7Pro</model>
+		</Mobile>
+</Mobiles>
+
+	  
+---------------------------JSON Format
+{	"Mobiles" : 
+	[{
+		"name":"Samsung"
+		"model":"S3"
+	
+	},		
+	{
+		"name": "OnePlus"
+		"model": "7Pro"
+	}	
+	
+]}
+
+--------------------------YML File 
+Mobiles:
+	- name: Samsung
+	  model: S3
+	- name:	OnePlus
+	  model: 7Pro 
+	  
+	 
+We can define YML file in various format we will use : YAML list format
+
+- name: Install RPM
+  yum:
+    name: tomcat10
+    state: present
+
+- name: Copy web.xml
+  template:
+    src: web.xml.j2
+    dest: /opt/tomcat/conf/web.xml
+
+- name: Start service
+  systemd:
+    name: tomcat
+    state: started
+
+
+
+	  
+	 
+---------------------------------------- Lecture 3 Ansible configuration.
+
+Note : It is required to have installed python 2.4 or above on Ansible Controller server. because Ansible is written in python language only
+		Ansible communicate with other machine using SSH port 22, due to which it become agentless
+
+
+Note : In Ansible system, We have one Controller machine and any other machine is known as worker node. 
+		1. Controller machine must be able to communicate with all the worker nodes
+		2. We need to install ansible on controller node only. 
+		3. Ansible push any task from Controller to worker node using ssh port 22 and
+		4. it is required to have ssh passwordless 	connection between controller and worker node. 
+		
+
+
+Command to check rpm package for ssh : rpm -qa | grep openssh
+Command to remove rpm package : rpm -e package_name
+	
+	
+command to install ansible package : yum install ansible* -y 
+
+
+Note :  1. ansible have a inventory file that consist of list of worker node host, where ansible can perform any task on those host. 
+		2. We can define the userid and password of worker node in inventory file as well, using which ansible will login into target machine.
+		3. if we did'nt pass than asnible will prompt for password.
+		
+		ansible --version			// this will show ansible, python version along with the ansible configuration file. : 
+									/etc/ansible/ansible.cfg
+										 
+										
+		configuration file. : /etc/ansible/ansible.cfg				//ansible.cfg file will have path of inventory file.
+										
+		location of inventory file  : /etc/ansible/hosts
+		
+		ansible all --list-hosts			// list all the host in inventory file.
+		
+Entries in inventory file. : we can create the different groups of hosts using [] brackets
+			example :	[web-server]
+						192.178.34.51
+						10.20.30.10
+						[app-server]
+						172.34.56.21
+						172.34.87.21
+now we can list out only specific group of servers : ansible web-server	--list-hosts
+												   : ansible app-server --list-hosts
+					to list multiple hosts groups  : ansible web-server:app-server --list-hosts	 
+				
+
+parent and children group creation : 
+	Example: 
+	
+	[production:children]
+	web-server
+	app-server
+	
+	here "production" is the new and parent group that have "web-server" and "app-server" as its child.
+	when we list production group than it will list list of "web-server" and "app-server" groups server list.
+				
+Note: We can use our own inventory file instead of the given or standard one, we need to change the path of inventory file in ansible.cfg file.
+
+mkdir myinventory
+vi inventoryfile
+ansible all --list-hosts -i myinventory/inventory				// if we have not changed the path of inventory file in ansible.cfg
+																	otherwise not required to mention -i file_name
+
+												 
+							
+-------------------------------------------------Lecture 4 
+Note : if we have three different resource working on ansible, so each will have its own userid on ansible controller 
+		and each resource can have his own inventory file because by the configuration file exist inside /etc which is accesible to root only
+		
+		
+add three different users harry (web servers), natasha (app servers), sarah (db servers)
+
+useradd harry			
+useradd natasha
+useradd sarah
+passwd harry
+passwd natasha
+passwd sarah
+
+harry
+mkdir myinventory
+vi harryinventory -> entry
+						[web-server]
+						192.168.137.23
+command: ansible web --list-hosts	-> error
+		 ansible web --list-hosts 	-i myinventory/abc		-> working
+
+Do harry need to hit command using -i always? or if harry get the permission to keep the path of his inventory file in ansible.cfg file, 
+than what natasha and sarah will do??
+
+now instead of changing path in .cfg file, copy the ansible.cfg file in his own user home directory and set the environment variable to pick the ansible.cfg from 
+harry user inventory directory path
+  
+export ANSIBLE_CONFIG=/home/harry/myinventory/ansible.cfg
+
+Now after exporting the ANSIBLE_CONFIG variable, harry is not picking the ansible.cfg from /etc/ansible/ansible.cfg, he is picking from /home/harry/myinventory/ansible.cfg
+and harry can edit the path of inventory file his file /home/harry/myinventory/ansible.cfg anytime
+
+export the ANSIBLE_CONFIG as permanent variable, by making this entry in .bashrc which is at /home path of user
+
+cd /harry/home
+l.  or ls -a
+vi .bashrc
+entry -> export ANSIBLE_CONFIG=/home/harry/myinventory/ansible.cfg
+
+
+Second way to have user own ansible.cfg file.
+instead of environment variable, we can just copy the ansible.cfg to /harry/home directory, 
+		login with user harry
+		: cp /etc/ansible/ansible.cfg .
+		now we can see in path of configuration file = /home/harry/ansible.cfg file 
+		
+
+-------------------------------------------------------Lecture 5 Ansible Module
+
+An Ansible module is a small, reusable program or script that acts as a unit of work within the Ansible automation framework
+We have different different module for different kind of task. like copy module package installing module etc
+
+ 
+Command to perform task on specific machines :
+	ansible target -m command   -a "uptime"
+	ansible [group_name] -m command -a "uptime"
+	ansible web-servers -m command -a "uptime"
+	
+	
+Note : If we are running a task on target node using root user than ansible will perform that using same root user. 
+		command module we can use to run any command on worker node. but only one command we can run at a time.
+	
+
+Note : Whenever ansible take the login in worker node it askfor key verification permission, so if we have 100 of node as worker than we need to verify 100 times.
+		to avaid such condition, we can remove the host key verification.
+		
+		ansible web-servers -m command -a "uptime" -k				//-k will prompt for password.
+		ansible --version
+		vi /etc/ansible/ansible.cfg
+		search for host_key_checking = False and uncomment this line
+
+Note : When we run the command on worker node it will deny the login, because the machine will treat the attempt as ssh passwordless login attempt, and we have not did it yet.
+		so we should have the password for target machine if we have not setup password less connection.
+		
+Test Commands: ansible web -m command -a "touch /abc" -k
+			   ansible web -m command -a "yum install httpd*" -k 
+			   anisble web -m command -a "ls;date;uptime" -k			// we can not run multiple command using command module. we need to use raw module.
+			   
+			   ansible web -m raw -a "ls;date;uptime" -k
+			   
+Note : after running command we need to provide password every time, to avoid this we need to make it keyless login.
+	   hit "ssh-keygen" command on ansible controller machine, this will create /home/.ssh directory where we can find id_rsa,id_rsa.pub, we need to copy id_rsa.pub 
+	   file to worker node at path ~/.ssh/.
+
+command : ssh-keygen					
+				id_rsa
+				id_rsa.pub
+		  ssh-copy-id -i root@workernode-1
+		  ssh-copy-id -i root@workernode-2
+		 
+
+-------------------------------------------------------------Lecture 6 
+
+List all the ansible modules : below command will list all the modules that is require to provision AWS, Azure, GCP etc.
+ansible-doc -l
+
+module classification: below command will give the complete describe of copy module
+ansible-doc copy 
+
+anisble all -m copy -a "src=/etc/passwd dest=/tmp"						//command copy passwd file into destination /tmp directory of target worker nodes, with same permissions and ownerships
+
+anisble all -m copy -a "src=/etc/passwd dest=/tmp owner=kubernetes"			//copying to target node and changing the ownership
+
+anisble all -m copy -a "src=/etc/passwd dest=/tmp owner=kubernetes group=azure mode=777"  //copying with changing permission and ownership
+
+anisble all -m copy -a "src=/etc/passwd dest=/tmp owner=kubernetes group=azure mode=777 backup=yes" it will also take the backup
+
+anisble all -m copy -a "src=/etc/passwd remote_src=yes dest=/tmp owner=kubernetes group=azure mode=777 " remote_src use when we copy file within a machine from one path to another path
+
+ansible all -m copy -a "content="welcome to Ansible dest=""
+
+Note : for checking, how to use the module we can describe the module under which we can find the example use of that specific module.
+
+
+-------------------------------------------------------------------Lecture 7
+Fetch Module : bring the data from target  node to controller node.
+
+command to describe: ansible-doc fetch
+
+ansible all -m fetch -a "src=/var/log/yum.log dest=/logs"			//it will fetch  yum.log file and copy it to /logs directory
+yum install tree
+tree
+
+ansible all -m fetch -a "src=/etc/passwd dest=/logs"				// it will fetch passwd file from each of the target server and copy it to ansible controller machine in /logs
+
+
+
+------------------------------------------------------------------Lecture 8
+File Module : file creation, directory creation, deletion, etc
+
+ansible-doc file
+
+commands
+
+ansible all -m file -a "path=/tmp/india state=directory"			//command will create directory of name india, because state is mention as directory.
+																	if state=touch, than it will create file
+													
+ansible all -m file -a "path=/tmp/india mode=777"				//command will change the permission on file or directory of name india
+
+ansible all -m file -a "path=/tmp/india state=absent"  	      //command to delete file or directory from given path.
+
+ansible all -m file -a "src=/etc/passwd dest=/tmp/newlink state=link"			//command to create link of passwd file in /tmp/newlink file  state=hard will create a hard link
+
+
+------------------------------------------------------------------Lecture 9
+Shell module : The shell module takes the command name followed by a list of space delimeter arguments. it is almost exactly like the [command] module but runs the command through
+				a shell(/bin/sh) on the remote node, for window target it uses win_shell
+
+describe : ansible-doc shell
+
+let we have a scritp on target machine or we created a script and copied it to target machines. so we will use this shell module to run the script on the target machine 
+terminal
+
+command : ansible all -m shell -a "sh /tmp/myscript.sh"
+
+
+
+-------------------------------------------------------------------Lecture 10
+package module: use to install software and remove software from machine, we can also use yum or apt module to install software (use=yum, use=apt).
+				for windows OS, we can use win_package
+
+describe : anisble-doc package
+
+commands: 
+	ansible all -m package -a "name=httpd state=present"				//command will install the httpd package in target machine
+	ansible all -m package -a "name=httpd state=installed"				//command will install the httpd package in target machine
+	
+	ansible all -m package -a "name=httpd state=absent"				//command will remove the httpd package in target machine
+	ansible all -m package -a "name=httpd state=removed"				//command will remove the httpd package in target machine
+	
+	ansible all -m package -a "name=httpd state=latest"				//command will install the latest httpd package in target machine or upgrade
+	
+	ansible all -m package -a "name=httpd state=installed use=yum"				//command will install the httpd package in target machine using yum
+	
+
+
+----------------------------------------------------------------------Lecture 11
+yum module 
+
+describe : ansible-doc -l | grep yum				//it will show two yum modules
+				yum 											// manage package with 'yum' package manager
+				yum repository									//Add or remove yum repository, A YUM repository is a directory of RPM software packages and metadata that allows the 
+																	YUM package manager to install, update, and remove software on a Linux system
+	
+Commands : yum repolist				//list all the yum package available in machine
+
+		ansible all -m yum_repository -a "name=yum-server description="this is my first yum server" file=my_yum_server baseurl=https://download.fedoraproject.org/pub/epel/$releaserver/$basearch/ gpgkey=http://server.com/keys/somerepo.pub gpgcheck=yes or no enabled=yes"
+									// the above command will install a package in yum repository, 
+		
+		check using : yum repolist
+					 cd /etc/yum.repos.d
+					 
+		
+		ansible all -m yum_repository -a "name=yum-server state=absent file=my_yum_server" 		//command will remove the package from yum repository
+		
+		
+
+----------------------------------------------------------------------Lecture 12
+yum module
+
+describe : ansible-doc yum_repository
+	arguments
+		name of package : pck_name						//we can also mention the complete name of package with version so it can pick specific version like httpd-2.2.29.1.4
+															we can pass the complete path of package as well, so it can pick the specific one
+		state : 	present, latest(latest pack), absent(delete).
+		enablrepo :	 name of repo, from where we want to install package
+		exclude : kernel*, foo* 						//Argument for upgrade all pack, excluding specific package kernel and foo*
+		
+commands: 
+	ansible all -m yum -a "name=httpd state=latest"			//install httpd latest package
+	ansible all -m yum -a "name=httpd state=absent"			//remove httpd latest package
+	ansible all -m yum -a "name=httpd state=latest"			//install httpd latest package
+	
+				
+
+Note : Repository Directory we can find at /etc/yum.repos.d directory
+	
+Repo Creation 
+ansible all -m yum_repository -a 'name=newrepo description="this is new yum repo creation file=newrepo baseurl=https://download.fedoraproject.org/pub/epel/$releaserver/$basearch/ gpgcheck=0 enabled=yes'
+
+ansible all -m yum -a 'name=httpd enablerepo=newrepo state=present'				//Command will install the httpd in target machine and picked it from newrepo repository
+
+ansible all -m yum -a 'name='*' state=latest exclude=kernel*, foo*'			//update all the packages.
+
+ansible all -m yum -a 'list=httpd'					//command will give the report weather we have httpd package in target machine available or installed.
+
+
+
+---------------------------------------------------------------------------Lecture 13
+Service Module. : Service module use to manage the service running on the target machine.
+
+describe : ansible-doc service
+
+command : ansible all -m service -a "name=httpd state=started"			//command to start service
+
+		  ansible all -m service -a "name=httpd state=stopped"			//command to stop service
+
+	      ansible all -m service -a "name=httpd state=restarted"		//command to restart service
+
+		  ansible all -m service -a "name=httpd state=reloaded enabled=yes"			//command to reload  service
+		  
+		  ansible all -m service -a "name=httpd enabled=yes"			//command to enable the service
+
+		  ansible all -m service -a "name=httpd state=stopped enabled=no"			//command to enable the service
+
+
+--------------------------------------------------------------------------Lecture 14
+User and Group Module : we can create user and group using this module.
+
+describe : ansible-doc group
+			ansible-doc user
+			
+command : ansible all -m group -a 'name=wipro state=present'			//create group in target machine of name wipro
+		  ansible all -m user -a 'name=natasha comment="natasha IT ADMIN" uid=1010 group=wipro'			//create user in target machine of name natasha part of wipro grp.
+		  ansible all -m user -a 'name=natasha shell=/sbin/nologin groups=wipro,tcs append=yes'				//append means updating the entity
+		  ansible all -m user -a 'name=natasha state=absent remove=yes'				//deleting the user.
+		  
+		 ansible all -m user -a 'name=natasha generate_ssh_key=yes ssh_key_bits=2048 ssh_key_file=.ssh/id_rsa'			//create ssh key for users
+		  	
+
+		  
+------------------------------------------------------------------------Lecture 15
+
+lineinfine module : used to ensure a specific line is present or absent in a file, or to replace an existing line that matches a regular expression
+				   using this we can change or replace the text in file available in target system.
+				   
+commands :
+ansible all -m lineinfine -a 'path=/etc/sudoers line="ALL=(ALL) ALL"'			//command will add the given line in the target file at the bottom
+
+ansible all -m lineinfine -a 'path=/etc/sudoers line="ALL=(ALL) ALL" state=absent'			//command will remove the given line from the target file 
+
+ansible all -m lineinfine -a 'path=/etc/sudoers line="ALL=(ALL) ALL" insertafter=BOF'			//command will add the given line in the target file at begining of the file.
+
+ansible all -m lineinfine -a 'path=/etc/sudoers line="ALL=(ALL) ALL" insertafter=BOF state=absent'			//command will remove the given line from the target system from the begining of the file.
+
+ansible all -m lineinfine -a 'path=/etc/sudoers line="ALL=(ALL) ALL" insertafter=EOF'			//command will add the given line in the target file at ending of the file.
+
+ansible all -m lineinfine -a 'path=/etc/sudoers line="ALL=(ALL) ALL" insertafter="^root"'			//command will add the given line in the target file after the line having word root of the file.
+
+ansible all -m lineinfine -a 'path=/etc/sudoers line="ALL=(ALL) ALL" insertbefore="^root"'			//command will add the given line in the target file before the line having word root of the file.
+
+ansible all -m lineinfine -a 'path=/etc/sudoers line="ALL=(ALL) ALL" insertbefore="^root" state=absent'			//command will add the given line in the target file before the line having word root of the file.
+
+ansible all -m lineinfine -a 'path=/etc/sudoers line="ALL=(ALL) ALL regex="^root"'		//to replace
+
+
+
+--------------------------------------------------------------------------------Lecture 16
+
+Ansible playbook : is a YAML file that defines a set of tasks for Ansible to execute on remote machines to automate configurations, deployments, and orchestrations 
+
+We can write the playbook in two format YML or JSON
+Playbook can be write in three options
+	Single line
+	multiline
+	Dictionary Format
+	
+Create file myplaybook.yml
+	 -> there must be space between (-) and argument
+	 -> instead of passing all we can also write the host group name mentioned inside inventory file.
+	|--------------------------------------------
+	|	- hosts: all 
+	|	  tasks:
+	|		- copy: 
+	|			 src: /etc/passwd
+	|			 dest: /tmp/
+	|			 owner: kubernetes
+	|			 group: kubernetes
+	|			 mode: 777
+	|
+
+Command to run Playbook : ansible-playbook myplaybook.yml
+
+
+Note : If We want to define multiple task inside the playbook. the next task must be vertically parallel to first task
+
+	|--------------------------------------------
+	|	- hosts: all 
+	|	  tasks:
+	|		- copy: 
+	|			 src: /etc/passwd
+	|			 dest: /tmp/
+	|			 owner: kubernetes
+	|			 group: kubernetes
+	|			 mode: 777
+	|
+	|		- file:
+	|			path: /tmp/ansible
+	|			state: directory
+	|		- yum:
+	|			name: httpd
+	|			state: latest
+	|		- service:
+	|			name: httpd
+	|			state: started
+	
+
+----------------------------------------------------------------Lecture 17
+Single line format of ansible playbook
+
+	|--------------------------------------------------------------------------------------------------
+	|	- hosts: all 
+    |      tasks:
+    |    	- copy: src=/etc/passwd  dest=/tmp/  owner=kubernetes  group=kubernetes  mode=777
+    |    
+    |    	- file: path=/tmp/ansible  state=directory
+    |    		
+    |    	- yum:  name=httpd state=latest
+    |    		
+    |    	- service: name=httpd  state=started        		
+	|
+    |    		
+    |    		
+	
+----------------------------------------------------------------Lecture 18
+Multi line format
+
+		- hosts: all 
+           tasks:
+         	- copy: src=/etc/passwd  
+					dest=/tmp/  
+					owner=kubernetes  
+					group=kubernetes  
+					mode=777
+         
+         	- file: path=/tmp/ansible  
+					state=directory
+         		
+         	- yum:  name=httpd 
+					state=latest
+         		
+         	- service: name=httpd  
+					   state=started       
+
+
+-------------------------------------------------------------Lecture 19
+
+Json Format of ansible playbook : The file should be name on myplaybook.json					   
+	[
+		{
+			"hosts": "all",
+			"tasks": [
+				{
+					"copy": {
+						"src": "/etc/passwd",
+						"dest": "/tmp",
+						"owner": "kubernetes",
+						"group": "kubernetes",
+						"mode": 777
+						
+					}
+					"file":{
+						"path": "/tmp/ansible",
+						"state": "directory"
+					
+					}
+					"yum": {
+						"name": "httpd",
+						"state": "latest"
+					
+					}
+					"service": {
+						"name": "httpd",
+						"state": "started"
+					}
+				
+				}
+			
+			]
+		
+		}
+	
+	]
+
+
+--------------------------------------------------------Lacture 20
+HOw to write one playbook for multiple target systems.
+
+		- hosts: app 
+           tasks:
+         	- copy: src=/etc/passwd  
+					dest=/tmp/  
+					owner=kubernetes  
+					group=kubernetes  
+					mode=777
+         
+         	- file: path=/tmp/ansible  
+					state=directory
+        - hosts: web 
+		   tasks:
+         	- yum:  name=httpd 
+					state=latest
+         		
+         	- service: name=httpd  
+					   state=started
+					   
+					   
+Note: passing message for task when running
+
+		 - name: this is the task for app server group	    
+		   hosts: app 
+           tasks:
+		    - name: this is the first task      //namin the task
+         	  copy: src=/etc/passwd  
+					dest=/tmp/  
+					owner=kubernetes  
+					group=kubernetes  
+					mode=777
+         
+         	- file: path=/tmp/ansible  
+					state=directory
+         - name: this is the task for web server group
+		   hosts: web 
+		   tasks:
+		    - name: this is the second task     //naming the task
+         	  yum:  name=httpd 
+					state=latest
+         		
+         	- service: name=httpd  
+					   state=started
+					   
+
+
+-----------------------------------------------------------Lacture 21
+Note : We can keep the task seperate in different file and we can call that task as below
+
+calling task 
+   |----------------------myplaybook.yml----------------------|
+   |- name: we are calling a task from task1.yml file, Task defined in task1.yml |
+   |  hosts: web                                              |
+   |  tasks:                                                  |
+   |	- import_tasks: task1.yml
+   |
+   |- name: we are callin second task 
+   |  hosts: app
+   |  tasks: 
+   |     - import_task: task2.yml    |	 
+   |----------------------------------------------------------|
+   
+   Note : We can define multiple task in the below task files, and  we can also call multiple task file for calling multiple task in one task.
+			we  just need to use one more import_tasks
+   ---------------------------task1.yml------------------------------------------------ |
+   |                                                                                    |
+   |	- name: this is the task file, this task is called in above ansible playbook.   |
+   |		copy:                                                                       |
+   |		  src: /etc/passwd                                                          |
+   |		  dest: /tmp/                                                               |
+   |		  owner: kubernetes                                                         |
+   |		  group: kubernetes                                                         |
+   |		  mode: 777  
+   |
+   
+   
+   -----------------------------------task2.yml---------------------------------------
+   |
+   |	- name: This task is called in myplaybook.yml file 
+   |		yum: 
+   |		 name: httpd
+   |		 state: latest
+   |
+   |----------------------------------------------------------------------------------
+   
+   
+   
+   
+   
+   
+-----------------------------------------------------------------------Lecture 22
+Sample LAB : We are going to run a website which we deploy on target systems, website will be host on httpd.
+
+Download a sample website, and place it in ansible controller 
+
+
+myplaybook.yml 
+		
+		- hosts: all
+			tasks:
+				- yum: 
+				    name: httpd
+				    state: latest
+				  
+				- copy: 
+					src: /sourcecode/
+					dest: /var/www/html/
+				
+				- lineinfile:
+					path: /etc/httpd/conf/httpd.conf
+					regex: '^Listen'
+					insertafter: '#Listen'
+					line: 'Listen 8080'
+					
+				- firewalld:
+					port: 8080/tcp
+					permanent: true
+					state: enabled
+					immediate: true
+				- service:
+					name: httpd
+					state: started
+					
+Now the above code will deploy the static website on port 8080, and start the service as well.
+
+
+----------------------------------------------------------Lecture 25
+Ansible Variable: When we need to use a task multiple times, than we can create a variable of that task and can call the task by just naming the variable.
+
+Variable LAB.
+
+	|-------------------------myvariable.yml------------------
+	|	
+	|		- hosts: all	
+	|		  vars: 
+	|			mydir: /tmp/cloudknowledge
+	|			myfile: /etc/passwd
+	|			mypkg:
+	|				- httpd			
+	|				- nfs-utils
+	|				- tree
+	|
+	|		  tasks:
+	|			- file: 
+	|				path: "{{mydir}}"					//calling a variable
+	|				state: directory
+	|			- copy: 
+	|				src: /etc/passwd   or  "{{mydir}}"
+	|				dest: /tmp/cloudknowledge    or 	"{{myfile}}"
+	|
+	|			- yum:
+					name: "{{mypkg}}"
+					state: latest
+					
+					
+-------------------------------------------------Lecture 24
+
+Note : We can keep the variable and its values in seperate file and we can call those variable in playbook
+
+create var.yml file and place the variable and its values.
+	   
+	   mydir: /tmp/cloudknowledge
+	   myfile: /etc/passwd
+	   mypkg:
+		- httpd			
+		- nfs-utils
+		- tree
+		
+calling variable from variable.yml
+	   
+	 - hosts: all	
+			  vars_files:
+				- /myvariables/var.yml
+	
+			  tasks:
+				- file: 
+					path: "{{mydir}}"					//calling a variable
+					state: directory
+				- copy: 
+					src: /etc/passwd   or  "{{mydir}}"
+					dest: /tmp/cloudknowledge    or 	"{{myfile}}"
+	
+				- yum:
+					name: "{{mypkg}}"
+					state: latest
+
+
+
+----------------------------------------------------Lecture 23
+How to call the call the variable while running the ansible playbook command
+
+	
+		ansible-playbook variable.yml -e mydir=/tmp/cloudknowledge -e myfile=/etc/passwd -e mypkg=httpd,nfs-utils,samba,tree
+		
+		Note : If we pass variable values in command line and inside variable.yml as well than ansible will consider the value coming from command line.
+		
+		
+
+--------------------------------------------------Lecture 26
+Note: We can also declare the variable and its value in inventory file as well.
+		So that we can pass the different variable for different targets or different variable values for different targets.
+		
+Example Lab: 
+	
+	-----------------------------inventory file.
+		[app-server]
+		192.168.23.24
+		
+		[web-server]
+		172.16.8.10
+		
+		
+Tareeka one ---------------------------playbook.yml
+	
+		- host: app-server
+			vars: 
+				mydir: /tmp/cloudknowledge1
+				myfile: /etc/passwd1
+				mypkg:
+					- httpd
+					- tree
+					- samba
+		
+		- hosts: web-server
+			vars: 
+				mydir: /tmp/cloudknowledge2
+				myfile:	/etc/passwd2
+				mypkg:
+					- httpd
+					- tree
+					- samba
+Run: ansible-playbook playbook.yml
+
+
+Tareeka Two 
+Set the variable and its values in inventory file just in the front of IP of target hosts as below.
+	
+	
+	-------------------------------------inventory file 
+	Note : in below inventory file, we are defining the same variable but different variable values.
+	[web]
+	192.168.23.24  mydir=/tmp/cloudknowledge1  myfile=/etc/passwd1 mypkg=httpd,tree,samba
+	172.16.8.10	   mydir=/tmp/cloudknowledge2  myfile=/etc/passwd2 mypkg=httpd,tree,samba
+	
+and directly call the variable in playbook.yml file
+
+
+-----------------------------------------------------------Lecture 27
+Defining the variable on the basis of group of inventory file.
+
+
+Note : In the below file we have define the different variables for different group, and can directly call these variable in playbook.yml file
+		-----------------------------inventory file.
+		[app-server]
+		192.168.23.24
+		
+		[web-server]
+		172.16.8.10
+		
+		[web-server:vars]
+		 mydir=/tmp/cloudknowledge1  
+		 myfile=/etc/passwd1 
+		 mypkg=httpd,tree,samba
+		
+		[app-server:vars]
+		 mydir=/tmp/cloudknowledge2  
+		 myfile=/etc/passwd2 
+		 mypkg=httpd,tree,samba
+		 
+		 ----------------------------playbook file
+		 - hosts: all
+		 but when it comes to host of specific group and it is required to pass the values of variable than 
+		 values will be called from specific group variables
+		 
+
+
+-------------------------------------------------------------Lecture 28
+For performing any task on worker nodes, the master or ansible controller node require the authentication of target machine, it could be done via
+by sharing the ssh key or passwordless ssh connection.
+
+1. hit command ssh-keygen on controller node
+	it will create id_rsa and id_rsa.pub.
+	we need to share id_rsa.pub file to worker node (~/.ssh or /home/your_username/.ssh)
+	command: ssh-copy-id -i root@worker-node
+	
+Note : if we are not connecting via key, we are connecting via user and password than we need to use command like
+		ansible-playbook playbook.yml -u root -k 			(-u for userid, -k for password) and command line promt for user password.
+		
+		If we dont want to write -u, -k every time than, open /etc/ansible/ansible.cfg file and uncomment #ask_pass=True, #remote_user=root
+		
+		Now, we dont need to write -u and -k while running ansible-playbook command
+	
+2. pass the login cred in the inventory file
+
+	[web-server]
+	 192.168.23.24 ansible_ssh_user=root ansible_ssh_pass=redhat ansible_ssh_port=22
+
+command: anisble-playbook variable.yml				//login credentials will not be asked
+
+Note : As we passwd user cred as variable above, we can also pass these credentials during group classification
+	
+	[web-server:vars]
+	ansible_ssh_user=root 
+	ansible_ssh_pass=redhat 
+	ansible_ssh_port=22
+		
+
+Note : If we have pass the variable in group specification and in front of target host ip as well, than it will consider the variable in front of 
+		target host ip will be considered
+		
+
+------------------------------------------------------------Lecture 29
+Loop
+
+let take an example: we have to copy some file to a target destination. we will write playbook like
+
+	- hosts: all
+		tasks: 
+			- copy: 
+				src: /etc/passwd, /etc/group, etc/shadow				// this we can't do, this is wrong way, we need to write copy module three times.
+				dest: /tmp/
+	
+			- copy: 
+				src: /etc/passwd, /etc/group, etc/shadow				// this we can't do, this is wrong way, we need to write copy module three times.
+				dest: /tmp/
+			- copy: 
+				src: /etc/passwd, /etc/group, etc/shadow				// this we can't do, this is wrong way, we need to write copy module three times.
+				dest: /tmp/
+				
+by Using loop -> loop.yml
+
+	-hosts: 
+	 tasks: 
+		- copy: 
+			src: "{{ item }}"							//item is a predefind variable
+			dest: /tmp/
+		  with_items: 
+				- /etc/passwd
+				- /etc/group
+				- /etc/shadow
+				
+
+-------------------------------------------------------------Lecture 30 
+Example: 
+
+
+	-hosts: 
+	 tasks: 
+		- copy: 
+			src: "{{ item }}"							//item is a predefind variable
+			dest: /tmp/
+		  with_items: 
+				- /etc/passwd
+				- /etc/group
+				- /etc/shadow
+		- file:
+			path: "{{ item }}"
+			state: directory
+		  with_items:
+				- /tmp/cloudknowledge1 
+				- /tmp/cloudknowledge2
+				- /tmp/cloudknowledge3
+				
+		- copy: 
+			src: /etc/passwd
+			dest: "{{ item }}"
+		  with_items: 
+				- /tmp/cloudknowledge1
+				- /tmp/cloudknowledge2
+				- /tmp/cloudknowledge3
+				
+
+-----------------------------------------------------------Lecture 31
+
+	-hosts: all
+		vars:
+		 mydir:
+		  - /tmp/cloudknowledge1
+		  - /tmp/cloudknowledge2
+		  - /tmp/cloudknowledge3
+		 myfile:
+		  - /etc/passwd
+		  - /etc/group
+		  - /etc/shadow
+		tasks:
+		  - copy: 
+		     src: "{{ item }}"
+			 dest: /tmp/
+			with_items:
+			   - "{{ myfile }}"
+		  - file:
+			 path: "{{item}}"
+			 state: directory
+			with_items:
+				- "{{mydir}}"
+		  - copy:
+			 src: /etc/passwd
+			 dest: "{{item}}"
+			with_items: "{{mydir}}"			//if we write it from next line than we need to pass (-)
+				
+		
+--------------------------------------------------------------Lecture 32
+Exmple:
+
+		
+		- hosts: 
+		  tasks:
+			- yum: 
+				name: "{{item}}"
+				state: installed
+			  with_items:
+					- ftp
+					- httpd
+					- vsftpd
+					- nfs-utils
+		
+	Note : it is not required to apply loop for yum module.
+	
+	
+	
+------------------------------------------------------------------Lecture 33
+Nested Loop
+	
+	Example 1
+		-hosts:
+		 tasks: 
+			- copy: 
+				src: "{{item[0]}}"
+				dest: "{{item[1]}}"
+			  with_nested: 
+					- /etc/passwd
+					- /tmp
+	
+The above code will copy the item[0] i.e passwd file at item[1]	i.e /tmp
+			
+	Example 2
+	
+		-hosts:
+		 tasks: 
+			- copy: 
+				src: "{{item[0]}}"
+				dest: "{{item[1]}}"
+			  with_nested: 
+					- ['/etc/passwd', '/etc/passwd', '/etc/shadow']				//this is how we can pass multiple values with [] and ''	
+					- ['/tmp', '/mnt', '/opt']									 
+
+
+The above ansible code will copy all three file at all three locations	
+
+	Example 2, second way
+	
+		
+		-hosts:
+		 vars:
+			myfile: 
+			 - /etc/passwd
+			 - /etc/group
+			 - /etc/shadow
+			mydir: 
+			 - /tmp
+			 - /mnt
+			 - /opt
+			 
+		 tasks: 
+			- copy: 
+				src: "{{item[0]}}"
+				dest: "{{item[1]}}"
+			  with_nested: 
+					- "{{myfile}}"
+					- "{{mydir}}"
+					
+					
+--------------------------------------------------------------Lecture 34
+
+Note : 
+		-hosts:
+		 vars:
+			myfile: 
+			 - /etc/passwd
+			 - /etc/group
+			 - /etc/shadow
+			 
+		 tasks: 
+			- copy: 
+				src: "{{myfile}}"
+				dest: "{{item}}"
+			  with_items:
+					- /tmp
+					- /opt
+					- /mnt
+					
+
+--------------------------------------------------------------Lecture 35
+Hash Loop : when we need to copy list of specific files into list of specific directory than we need to use hash loop.
+			means, we have to copy three different file at different  path. than we need to use hash loop.
+	
+	If we are going to use nested loop than it will copy all the 
+	
+	- hosts: all
+	  tasks:
+		myfile: 
+		  - /etc/passwd
+		  - /etc/group
+		  - /etc/shadow
+		mydir:
+		  -	/opt
+		  - /mnt
+		  - /tmp
+		  
+		tasks: 
+			- copy: 
+				src: "{{item[0]}}"
+				dest: "{{item[1]}}"
+			  with_nested: 
+					- "{{myfile}}"
+					- "{{mydir}}"
+		
+		Now, this code will copy all th 3 file at all 3 directory /tmp, /opt, /mnt
+		
+
+But we have to copy specific file to specific directly. Now using simple loop
+	
+	- hosts: all
+	  tasks:
+		- copy: 
+			src: "{{item}}"
+			dest: /opt
+		  with_items:
+				- /etc/passwd
+		- copy:
+			src: "{{item}}"
+			dest: /mnt
+		  with_items:
+				- /etc/group
+		- copy:
+			src: "{{item}"
+			dest: /tmp
+		   with_items:
+				- /etc/shadow
+
+Now using Hash Loop in below code
+	
+	- hosts: all
+	  tasks:
+		- copy: 
+			src: "{{item.a}}"
+			dest: "{{item.b}}"
+		  with_items:
+				- {a: '/etc/passwd', b: '/opt'}
+				- {a: '/etc/group', b: '/mnt'}
+				- {a: '/etc/shadow', b: '/tmp'}
+				
+				
+-----------------------------------------------------------Lecture 36
+Example Hash loop
+
+	- hosts: all
+	  tasks: 
+		- user:
+			name: "{{item.user}}"
+			state: present
+			groups: "{{item.group}}"
+			with_items:
+				- {user: 'harry', group: 'dev-grp'}
+				- {user: 'natasha', group: 'test-grp'}
+				- {user: 'sarah', group: 'prod-grp'}
+				
+				
+-------------------------------------------------------------Lecture 37
+Facts: gathering the information from target or worker nodes.
+		The facts is stored in form of variable and its values, so ansible gather the target machine facts fron these variable.
+		we gather these information using setup module
+		when we run ansible-playbook command the setup module always runs
+		
+		Target machines have different kernel version and different OS, so if we have to run plabook on the basis of these information, than we need setup module.
+		
+
+Command: ansible all -m setup 					// this command bring all the facts of target machines
+
+		ansible all -m setup --tree /tmp/worker1		//command will bring the information in  file of /tmp/worker1 directory with the name of IP-address
+		
+filter data:  ansible -m setup -a  'filter=ansible_all_ipv4_addresses'			//bring all the information of IP address of target machines
+			  ansible -m setup -a  'filter=ansible_architecture'		
+			  ansible -m setup -a  'filter=ansible_dns'
+			  ansible -m setup -a  'filter=ansible_kernel'
+			  ansible -m setup -a  'filter=ansible_mounts'
+			  
+			  
+------------------------------------------------------------------Lecture 38
+custom facts: for creating cutom facts
+				create : mkdir -p /etc/anisble/facts.d
+				create a file: worker-node1.fact
+				and now put some variable and its values in this fact file
+				
+call the custom facts: ansible all -m setup -a 'filter=ansible_local'
+
+
+Note : We should stop gathering the facts from target machine for security purpose. so put "gather_facts=false" in playbook
+		
+		- hosts: all
+		  gather_facts: false
+		  tasks:
+			-copy: --------------
+				-----------
+			  ---------
+			  
+			  
+
+-----------------------------------------------------------------Lecture 39
+Conditional statement: condition like, if we want that ansible only run task on specific node who satisfy the given condition.
+
+	- hosts: all
+	  tasks:
+	    -yum:
+		  name: httpd
+		  state: installed
+		 when: ansible_distribution == "Ubuntu" 			//when keyword is used to define condition
+		 when: ansible_distribution_major_version == "7"				//action will be taken on last condiion
+		 when: ansible_kernel == "3.10.0-1062.el7.x86_64"
+		 
+Note : When code does not find any node of matching condition than, it will skip the task.
+		  
+		
+
+-------------------------------------------------------------------Lecture 40
+Operators for When or conditional statements : == , !=, < , > , <=, >=, and, or 
+
+
+-------------------------------------------------------------------Lecture 41
+	
+	- hosts: all	
+	  tasks:
+		- yum:
+			name: httpd
+			state: installed
+		  when: ansible_distribution_major_version > "7"
+		  when: ansible_distribution_major_version == "7" or ansible_distribution == "ubuntu" 
+		  when: (ansible_distribution_major_version == "7" or ansible_distribution == "ubuntu" ) and (ansible_distribution_major_version == "23" or ansible_distribution == "Centos" )
+			
+
+			  
+			  
+			  
+			  	
+-----------------------------------------------------------------------Lecture 43
+
+Let, we have to check weather the file exist in target machine or not, if exist than write some text in target file.
+for achiving this, we need to check state of file existance first in first task than store this stae in custom variable than we can call the custom 
+variable in our task
+
+	example.yml
+	
+	- hosts: all
+	  tasks:
+		- stat:											//stat module check the status of file 
+			path: /etc/clouknowledge
+			register: cloudknowledgeindia					//registering the state of cloudknowledge file using keyword register
+			
+		- debug: 
+			var: cloudknowledgeindia						//declaring a new variable cloudknowledgeindia
+		
+		- copy:
+			content: "welcome to ansible tutorial"					//content going to write in target file
+			dest: /etc/cloudknowledgeindia
+		  when: cloudknowledgeindia.stat.exists == true
+		
+	  
+--------------------------------------------------------------Lecture 44
+In below code, we are checking the sshd service is active or not and carring the command facts in report variable, and than
+comparing one of sshd service attribute value in condition.
+
+	- hosts: all
+	  tasks:
+		- command: systemctl is-active sshd
+		  register: report
+		  
+		- debug: var=report
+		- yum:
+			name: httpd
+			state: installed
+		  when: report.rc == 0						//rc=0 attribute fetched from the facts of command (systemctl is-active sshd), we can pick any attribute 
+															it is not mandatory to pick rc
+															
+															
+---------------------------------------------------------------Lecture 45
+Notify and handlers : Handler will perform a task when receive the notification.
+						let we want to edit the configuration file httpd.conf of target system than after updating the changes it has to notifiy the  handler, and than
+						 handler will perform a task
+						 
+		- hosts: all
+		  tasks:
+			- lineinfile: /etc/ssh/sshd_config
+				    line: DenyUsers harry					//line will edit the file sshd_config.
+					notify: cloudknowledge
+		  handlers:
+			- name: cloudknowledge
+			  service: 
+				name: sshd
+				state: restarted							//The httpd service will get restart after configuration changes
+				
+Note : handler will get notify only when there will be any change in sshd_config file. Handler should be at last in the ansible yml file
+
+
+Note : we can also create multiple notification, so we can perform multiple task
+
+	
+		- hosts: all
+		  tasks: 
+			- lineinfile:
+					path: /etc/ssh/sshd_config
+					line: DenyUsers harry
+			  notify: 
+				- cloudknowledges
+				- cloudindia
+				- clouddelhi
+				
+			- copy:
+			   src: /etc/passwd
+			   dest: /tmp
+		  handlers:
+			- name: cloudknowledges
+			  service: sshd
+			  state: restarted
+			- name: cloudindia
+				yum: 
+				name: httpd
+				state: installed
+			- name: clouddelhi
+				command: reboot
+				
+-------------------------------------------------------------------Lecture 46
+tags: Tag can be attached to each task
+
+	example:
+			
+		- hosts: all
+		  tasks: 
+			- copy:
+				src: /etc/passwd
+				dest: /tmp
+			  tags: dev-team
+			
+			- file:
+				path: /tmp/cloudindia
+				state: directory
+			  tags: test-team
+			
+			- yum:
+				name: httpd
+				state: installed
+			  tags: prod-team
+			  
+Note : Using tags we can define while running playbook specific tasks that have specific tags
+
+Command : ansible-playbook example.yml --tags=dev-teams					//command will run the task having tag dev-teams
+		  ansible-playbook example.yml --tags=test-teams				//command will run the task having tag test-teams
+		  ansible-playbook example.yml --skip-tags=prod-teams			//command will run all the  task  except the task having tag "prod-teams"
+		  
+	
+-------------------------------------------------------------------------Lecture 47
+ignore_error : when we have multiple task written in playbook, if error occurs at any of the task than ansible will not move to next task.
+				but the task written before the error will completed
+				so using ignore_error, ansible can move to perform next task by skipping the task which have error.
+				
+	
+	- hosts: all
+	  tasks: 
+		- copy:
+			src: /tmp/passwd
+			dest: /tmp
+		  ignore_error: yes
+		
+		- file:
+			path: /tmp/cloudindia
+			state: directory
+		  ignore_error: yes
+		  
+
+------------------------------------------------------------------Lecture 48
+rescue & block & always
+
+if any of the task not run or failed than run rescue. Rescue and its task written under block
+
+	-hosts: all
+	 tasks:
+		- block:
+			- lineinfile:
+				path: /tmp/cloudknowledge.txt				//if file does not exit than rescue will execute
+				line: "Hello world"
+		  
+		  rescue: 
+			- file:
+				path: /tmp/cloudknowledge.txt				//create file
+				state: touch
+				
+			- lineinfile:
+				path: /tmp/cloudknowledge.txt
+				line: "Hello World"
+		
+		  always: 													// we write always when we sure the task is correct and it will always run
+			- yum:
+				name: httpd
+				state: installed
+				
+
+----------------------------------------------------------Lecture 49
+Vault: for the encryption of the playbook that we written in text format. we can also encrypt inventory file using vault.
+		while encryption and decryption we can set the password as well
+		
+Syntax: ansible-vault encrypt file.txt
+		password: ********
+		confirm password: ********
+		
+		ansible-vault decrypt
+		vault password: ********
+		Decryption Successful
+
+if we want to view the file without decryption tha use command:
+	
+	ansible-vault view file.txt
+	anisble-vault edit file.txt
+	ansible-vault create encrypt file.txt
+	
+Note : if we want to run encrypted ansible playbook than we need to decrypt first than we can use that playbook
+
+
+
+--------------------------------------------------------Lecture 50
+Ansible Role : when we use ansible role, it automatically create a directory structure, so that we can put different files at there place like variable etc. 
+
+Note : installing ansible we can find the roles path in /etc/ansible/ansible.cfg, if we create roles at different path than we need to change the same in ansible.cfg file as well.
+	   roles_path=/etc/ansible/roles
+	
+Create Role : ansible-galaxy init cloudknowledge
+cd cloudknowledge
+ls -lrt
+	-defaults
+	-files
+	-handlers
+	-metadata
+	-README.md 
+	-tasks
+	-templates
+	-tests
+	-vars
+
+Note : the above directory structure will get create automatically after creation of cloudknowledge role
+
+
+Example: go to tasks directory we will find a file called main.yml and define the tasks here inside main.yml
+	
+	- name: going to install apache package
+	  yum:
+		name: "{{apache_package}}"						//apache_package is variable, whose value we will define in variable file.
+
+	- name: going to start apache daemon
+	  service:
+		name: "{{apache_daemon}}"
+		state: started
+	
+	- name: going to copy source code
+	  copy: 
+		src: index.html
+		dest: "apache_documentroot"
+	
+	- name: Add Apache service to firewall rule
+	  command: firewall-cmd --add-service=http
+	 
+	- name: going to add apache configuration setting
+	  template: 
+		src: apache.j2
+		dest: "{{apache_conf}}"
+	  notify: restart_apache
+
+
+Now go to vars directory, place the value of variable here.
+
+	apache_package=httpd
+	apache_daemon=httpd
+	apache_documentroot= /var/www/html
+	apache_conf=/etc/httpd/conf.d
+	
+Now go to files directory, and placeor create the index.html file 
+
+Now go to template directory and place or create apache.j2 file
+	
+	<VirtualHost {{ansible_ens33.ip4.address}}:80>
+	ServerName {{ansible_fqdn}}
+	DocumentRoot  {{apache_documentroot}}
+	</VirtualHost>
+	
+Now go to handler Directory, and create handlers here
+	
+	- name: restart_apache
+	  service: 
+		name: {{apache_daemon}}
+		state: restarted
+		
+Inside test directory we have two file, inventory and test.yml, we can execute this role from here.
+first it will read tasks and rest of the variable and file accordingly
+
+	test.yml	
+		- hosts: web
+		  roles:
+		   - cloudknowledge 						//cloudknowledge is the role name.
+
+
+	  
+
+-------------------------------------------------------Lecture 51
+Create Role : ansible-galaxy init cloudknowledge
+
+Now we will not create role using command, will do manually. We can create only those that we requires
+
+create role directory: 
+mkdir cloudknowledge
+cd cloudknowledge
+mkdir defaults files handlers  tasks templates  vars
+
+now place the above code at there place in this role structure. like put variables in vars in main.yml, index.html in files, apache.j2 in templates, main.yml 
+create a new file playbook.yml
+
+	- hosts: all
+	  roles: 
+		- cloudknowledge
+
+Change the path of custom role in ansible.cfg file.
+run : ansible-playbook playbook.yml
+
+and we can see this also working fine.
+
+Note : after setting the path of role in ansible.cfg we can run run command for our playbook from anywhere
+
+
+---------------------------------------------------------------Lecture 52
+Ansible Galaxy: if we want to share our Role structure to our colleage than we can place it to shared drive and let the colleage know the path of role structure.
+				or we can upload it to " https://galaxy.ansible.com "
+			
+				it is also a cloud that provide the space to place ansible code, we can tar our ansible code and can upload it to galaxy cloud
+				
+				
+How to get the ansible code from galaxy. -> open galaxy cloud -> search for your ansible code -> copy the installation link
+example: ansible-galaxy install geerlinguy.apache
+
+We dont directly upload the role structure on galaxy, we create GITHUB account, upload it to github and link it to galaxy
+
+
+--------------------------------------------------------------Lecture 53
+Deployment on AWS using Ansible
+
+Requirement
+	1. Ansible
+	2. Python
+	3. Boto3
+		
+		sudo yum makecache
+		sudo yum install epel-release
+		sudo yum makecache
+		sudo yum install python-pip
+		pip install boto
+		pip install --upgrade pip
+		
+	4. access key secret key of user
+	
+	
+Writing playbook
+
+
+Note : We can describe any of aaws resource to get an example to create any resource on AWS console
+		
+		ansible-doc ec2
+
+
+	- hosts: localhost
+	  tasks: 
+		- ec2:
+		   aws_access_key: dbhjklmgbhjnkm
+		   aws_secret_key: vygbhnjgvybhujkml
+		   key_name: ansible-key					//key created on AWS console
+		   group: ansible-sg 										// security group created on AWS console
+		   instance_type: t2.micro						// type available on AWS console
+		   image: ami-ghjgbhnjhbn						//image ID
+		   count: 10
+		   wait: yes
+		   wait_timeout: 500
+		   instance_tags:
+				name: prod-instance
+		   monitoring: yes
+		   regions: ap-south-1
+		   vpc_subnet: vpc-567hbnjhgb5678ytgb
+		   assign_public_ip: yes
+		   
+
+Now add local host in hosts file of anisible
+	[localhost]
+	localhost
+				
+Stop the instance
+	
+	- hosts: localhost
+	  tasks:
+		- ec2:
+			aws_access_key: gvbhjnhbnjkmhbn 
+			aws_secret_key: bhncgybhujnubhhinj
+			instance_ids: i-7hdjnkscnd
+			region: ap-south-1
+			state: stopped				// use absent to terminate instance
+			wait: true
+			vpc_subnet_id:  subnet-678uinjkmjn
+			assign_public_ip: yes
+			
+			
+----------------------------------------------------------Lecture 54
+Calling variable names instead of constant names 
+
+	- hosts: localhost
+	  vars:
+		keypair: ansible-key
+	    instance_type: t2.micro
+		aws_access_key: bhnjjihbnjkmjhn
+		aws_secret_key: gujkubhjnkjhbj
+		security_group: ansible-sg
+		image: ami-fghbnjkm,lbhnjmk
+		region: ap-south-1
+	  tasks:
+	  - ec2: 
+		 aws_access_key: "{{ aws_access_key }}"
+		 aws_secret_key: "{{ aws_secret_key }}"
+		 key_name: "{{keypair}}"
+		 instance_type: "{{ instance_type }}"
+		 image: "{{image}}"
+		 
+		 
+Note : We can use aws instance tags as a groups, so that we can perform similar action on the instance or resource having same tag name like we can use
+		this while stopping the 10 instance of similar types
+		
+	- hosts: all
+	  tasks: 
+		- local_action: 
+			aws_access-key: akdbasjbfjbfs
+			aws_secret_key: iuafwbihefsbhefs
+			module: ec2
+			instance_tags: 
+				name: Test-Instance
+			state: stopped
+			region: ap-south-1
+			
+Note : above code will stop all the instance having tag : Test-Instance
+		if we want to apply action on mutliple tags than
+		
+		instance_tags:
+			name:
+			  - Dev-Instance
+			  - Test-Instance
+		state: running
+
+
+--------------------------------------------------------------Lecture 55
+		
+				

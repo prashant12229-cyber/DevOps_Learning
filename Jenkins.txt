@@ -1,0 +1,352 @@
+Jenkins
+
+-----------------------------------------------Lecture 1
+Using Jenkins, we can consume CI/CD Functionality i.e Contineous Integration, Contineous Functionality
+
+	
+SDLC MODEL (Requirement Gathering -> Design Development -> BUILD -> TEST -> DEPLOY -> BUGS and Improve 
+	
+Developer (software Development)->	GitHub (uploading Code) -> SonarQube (Testing of Software)	-> maven/graddle (build of Software)-> ansible (deployment of software)
+		
+
+-------------------------------------------- ---Lecture 2
+
+Jenkins installation
+	
+	support : Linux, Windows, VM, Cloud, Docker Container.
+	Min Hardware Requirement : 256MB RAM, 1GB HDD for container
+							 : 1GB RAM, 10GB HDD for OS
+							
+	Note: We should have Java installed on OS for installation of Jenkins
+	
+
+Create VM on AWS Cloud
+install java : yum install java* -y 
+Download the jenkins software for specific platform container, linux, Windows -> copy location -> yum install -y https://location.rpm
+systemctl start jenkins
+systemctl enable jenkins
+systemctl status jenkins
+
+Now we can access the jenkins console. : http://localhost:8080
+Provide Admin Password to unlock jenkins : /var/lib/jenkins/secrets/initialAdminPassword : skncnsdocnocnwo
+customize jenkins : install suggested plugins and select plugins to install
+select install suggested plugins
+next page: create first admin user
+
+-----------------------------------------------Lecture 3
+Jenkins installation on windows
+
+Download java for windows
+Install Java
+Download Jenkins
+Run Jenkins installer
+
+Now Again hit the url to access the jenkins console: http://localhost:8080
+provide the admin password from : C: \Program Files (x86)\Jenkins\secrets/initialAdminPassword
+install suggested plugins
+
+
+-----------------------------------------------Lecture 4
+Installation of Jenkins on Docker Container
+
+	
+	-> install Docker container			(yum install docker)
+	-> Run docker container
+		systemctl start docker
+		systemctl enable docker
+	-> Pull the Docker container image of jenkins
+		docker container run -itd -p 8081:8080 jenkins
+	
+	-> access the console of jenkins installed on docker container
+		http://localhost:8081					// use the port number mapped with 8080 port of jankins container
+		
+	-> docker container exec -it vhbsdv		/bin/bash
+	-> cd /var/jenkins_home/secrets/initialAdminPassword
+	
+	
+----------------------------------------------------------Lecture 5
+How to integrate GitHub Account with Jenkins
+
+	Types of Jenkins Jobs
+	1. Manual		: Job will run whenever we hit the build command from jenkins (If we dont select any of Job type while creation of Job)
+	2. Trigger build remotely :  Triggering the Jenkins Job from any of the remote system
+	3. Build after other project are built : when one of the project build completed or it will run when one of its previous job run completed than its build triggers the Job on jenkins 
+	4. build periodically : Running a jenkins job in specific time period or also called cron job
+	5. Poll SCM : this type will check the new commit in GitHub in specific period, if Commit find than only it will run the job
+	6. Github Hook trigger for GITScm Polling : The Job will run whenever developer commit the code and push it into GitHub
+												Means it will run everytime when commit comes from Developer
+											
+Note : For integrating GitHub and Jenkins we need to carry IP, Port and Token from Jenkins and provide it under GitHub
+	
+	How to fetch the Jenkins token
+	Login to Jenkins console -> Click on UserName at the top-right -> now click on configure -> Add Token -> Generate Token -> Copy the token
+	
+	
+	Login to GitHub account, -> Open the Code Repository -> Click on option Webhooks ->
+	Click on add webhook
+		
+		payload Url: http://jenkins-host:8080/github-webhook/
+		Secret: Jenkins Token : Token We just Generate on Jenkins console
+	
+	Add webhook, and now Jenkins and GitHub Is integrated.
+	
+Note : It is requiredd to have Github Package on Jenkins servers (yum install git)
+
+
+1. Creating a manual Job
+	Jenkins Dashboard -> Click new Item on Left -> Select free style project and Next
+	Under source Code Management Select Git and  provide Git Repository Code Url
+	Save.
+	
+	Manual Job Created
+	Open the Job and Click Build Now on Left
+
+Note : It is required to install GIT package on Jenkins server other wise we will get an error while adding the repository code URL in jenkins
+		yum install git
+
+2. Change Build Triggers to Build periodically
+	
+	Open the Jobs configuration and tick the check box of build periodically
+	under schedule : *****			(5 times astrick, means every minute and every hour)
+	
+	This will run every min
+
+3. Change Build Triggers to Poll SCM : The Job will not run, because it checks the new commit in periodic interval but run only when commit found.
+
+	Under Schedule : *****			(5 times astrick, means every minute and every hour)
+	
+	Now to find a new commit, we can either change the code in github directly, but it is not systematic.
+	Change the Code on developer machine and commit the changes from there.
+	
+4. Change Build Triggers to Github Hook Trigger for GITscm polling: This will run the Job whenever we commit code.
+	
+	Change the Code, and we can running job immediately
+	
+
+
+-----------------------------------------------------------Lecture 6
+Project : We will integrate the below components
+Flow : 
+
+					Developer  ------->    GITHUB  --->   Jenkins    --->    Ansible     --->   Web Server
+
+
+Note : It is require to have passwordless authentication between all servers
+
+We need 4 Servers for Developer, Jenkins, Ansible and Web Server and one GitHUB Account.
+
+Step 1: Install Jenkins on one of the machine
+
+Step 2: Install and configure Ansible Server
+		
+		Create an entry for Web-Server in inventory file of ansible : 
+		
+		inventory file : /etc/ansible/hosts
+		
+Step 3: Do ready the Web server by installing apache httpd 
+		install : yum install httpd
+		start services : systemctl start httpd
+		enable services : systemctl enable httpd
+	
+Step 4 : creating a passwordless connection between ansible and web server
+		
+		 command : ssh-keygen 										//this command will create id_rsa and id_rsa.pub file inside /home/user/.ssh/ directory 
+		 enable the root login on web-server 
+		 passwd root 												//set the root password
+		 vi /etc/ssh/sshd_config	
+		 uncomment the line #PermitRootLogin yes
+		 set 				 password authentication 
+		 ssh-copy-id -i root@web-server								//this command will copy the ssh key into web server at /home/user/.ssh/ directory
+		 
+Note : After sharing the key between ansible and web-server, the passwordless authentication will start working.
+		 
+		 
+Step 5 : Establish the Passwordless authentication between jenkins and Ansible Server, using the similar step performed in last step.
+
+Step 6: Write a ansible code i.e playbook.yml
+
+		
+		- hosts: all
+		  tasks: 
+			- copy:
+				src: /opt/index.html						//this index.html file will come from jenkins server after compilation.
+				dest: /var/www/html							//copying  the index.html file in html directory
+	
+Step 6: Create a project on Developer system and Push it to Github, 
+							OR
+		Create a project on Github and than clone it on local developer system, and than start altering the code.
+		
+		Let call the code we have Pushed on Github is index.html under repository demo-project
+		
+Step 7: Copy the Jenkins URL "jenkins-hostname:8080" 
+		open the github and than open the settings of repository demo-project -> open the webhooks tab on the left hand -> add webhook
+		add the jenkins url under 
+		payload URL "http://jenkins-hostname:8080/github-webhook/"
+		
+		open jenkins dashboard -> open configure  on left hand tabs -> API Token (ADD NEW TOKEN) -> Generate Token (Copy the Token and paste it under		 
+		secret "copy the secret from jenkins deshboard"	 of webhooks tab
+		
+Step 8: install a plugin on Jenkins "Public Over SSH"
+
+Note : This plugin will pass the file from jenkins server to ansible server via SSH connection.
+
+		Click Manage Jenkins on Left at Dashboard -> Manage Plugins -> Search SSH -> Select "Public Over SSH" -> Click on Install without Restart at below
+
+Step 9: Click on Manage Jenkins -> Click on configure system -> Come down at last and click Add SSH Server
+		Provide ServerName
+		Hostname :jenkins-server
+		username: root
+	    Select password authentication and provide password
+		Test the SSH Configuration
+		
+
+Step 10: Create Job
+Note :  Install the GIT Package on Jenkins Server. 	
+		yum install git* -y
+		Click on "New Items" on Left at Dashboard -> Provide the Job Name "demo-project" -> Select Free Style Project
+		Select "GIT" Under Source Code Management -> Provide the GIT http url of "demo-project" create above on GITHUB
+		
+		Select "GitHub Hook Trigger for GITscm polling" under Build Triggers
+		Select from dropdown "Send file or Execute commands over SSH" under Build
+
+
+Note : Now we can run any command on above added jenkins server in step 9.
+	   command : something like after compiling or after running the Job, whatever the file generated or software generated using the GIT Code, 
+				 we can copy the data from Jenkins to Ansible server.
+	   
+Imp Note : whatever the artifacts Generated by Jenkins server are stored at path : /var/lib/jenkins/workspace
+			the directory "workspace does not exist" it create when we run the job and we can find our artifacts inside the directory created inside "workspace" directory
+			with our project name like "demo-project"
+				-------------------------------------------------------------------------------------------------------------------------
+				|	
+				|	Select the above added Jenkin Server
+				|	
+				|	exec command: rsync -avh /var/lib/jenkins/workspace/demo-project/*.html		root@ansible-server:/opt/index.html		//source in ansible
+				|	
+				|	
+				|--------------------------------------------------------------------------------------------------------------------------------
+
+			Save and Apply
+			
+After running the Job, we can see the index.html file inside /opt/ of ansible server
+
+
+Step 11: Post Build Actions
+		 Here we are going to run the playbook written on ansible server, so that we can deploy the code "index.html" on web-server having apache httpd server
+		 
+		 select "send build artifacts over SSH"
+		 Repeat the step 9, to add ansible server
+		 
+				exec command : ansible-playbook /sourcecode/playbook.yml
+				
+				
+Now Our system is build now, whenever developer will change anything in code, we can immediately deploy that code.
+
+
+---------------------------------------------------Lecture 7
+
+Continue the last Lecture and involving Docker in Project
+				
+				
+	Developer   ->   Jenkins  ->  Ansible  -> Docker HUB  ->  Docker Host
+
+Let Developer have Dockerfile Code as below, this Dockerfile could be use to create Docker image
+			
+		|--------------------------------------------------------------------------------------
+		|	FROM centos:latest
+		|	MAINTAINER sanjaydahiya332@gmail.come
+		|	RUN yum install httpd 
+		|	zip \
+		|	ADD https://www.free-css.com/assets/files/free-css-template/download/pages247/kindle.zip /var/www/html			//URL of Code of application
+		|	WORKDIR /var/www/html
+		|	RUN unzip kindle.zip
+		|	RUN cp -rvf markups-kindle/*. kindle.zip
+		|	RUN rm -rf _MACOSX markups-kindle kindle.zip
+		|	CMD["/usr/sbin/httpd", "-D", "FOREGROUND"]
+		|	EXPOSE 80
+		|------------------------------------------------------------------------------------
+
+Note : We can install Docker on same machine on which we have jenkins, and run the Dockerfile Code to build image and store it their only.
+		Or we can do the same any other server as well, like we install Docker on Ansible machine and we run the command for Build, Tagging and Push using jenkins.
+		
+		
+Note : When we are running a docker file second time for image creation, we can't give the Image name, Tag similar as we have given in first run, for which we need to edit the Dockerfile
+		again and again. So we use Variables and the build name will be same as the Job name
+		
+		docker image build -t $JOB_NAME:Prefix.$BUILD_ID
+		docker image tag $JOB_NAME:Prefix.$BUILD_ID   sd2234/$JOB_NAME:Prefix.$BUILD_ID				
+		docker image push sd2234/$JOB_NAME:Prefix.$BUILD_ID		
+		
+		Now we can get the new created image using above command, but ansible playbook still have the old one, so we will use the latest tag everytime
+		
+		docker image tag $JOB_NAME:v1.$BUILD_ID sd2234/$JOB_NAME:latest
+		docker image push sd2234/$JOB_NAME:latest
+		
+		so while writing the playbook for container creation, we will write command only with image name, will not provide the tag, becasue if we are not going to use 
+			tag, than it will only pick the latest one.
+				
+				example: vi docker.yml
+				
+				- hosts: docker-hosts
+				  tasks: 
+					-shell: docker container run -it --name cloudknowledge -p 9000:80  sd2234/cloudknowledge
+					
+					
+Note : unnecessarily we are going to have many images on ansible server, so we will remove the image once the image pushed to registry
+		docker image rmi $JOB_NAME:v1.$BUILD_ID sd2234/$JOB_NAME:v1.$BUILD_ID sd2234/$JOB_NAME:latest
+		
+Note: Now when Docker host will get second time run container command, it will for image in its local first, and it will find the image with latest tag in local itself,
+		than it will not reach to Docker HUB. so we need to write in playbook something more as below
+		
+		Example: vi docker.yml
+		
+		- hosts: docker-hosts
+		    tasks: 
+			 - name: stop container
+			   shell: docker container stop cloudknowledge
+			 - name: remove container
+			   shell: docker container rm cloudknowledge
+			 - name: remove image
+			   shell: docker image rmi sd2234/cloudknowledge
+			 - name: create new container
+			    shell: docker container run -itd --name cloudknowledge-container -p 9000:80 sd2234/cloudknowledge
+				
+				
+Practical: Here we creating 3 servers for Jenkins, Ansible and DockerHost.
+			We will create Docker file code in GITHUB and will commit from GITHUB only , not createing a seperate server.
+					
+		
+Step 1: Configure Jenkins Server as below
+		Install Java
+			yum install java*
+		Install Jenkins
+			systemctl start jenkins
+			systemctl enable jenkins
+			
+		Install GITHUB Package
+			yum install git* -y
+		
+		Configure passwordless authen between jenkins and ansible. ssh-copy-id -i root@ansible-hosts (uncomment Permit Root login, set password authentication YES in /etc/ssh/sshd_config)
+
+Step 2: Configure Ansible server
+			yum install ansible
+		
+		create entry of Docker Host Machine in inventory file : /etc/ansible/hosts
+		configure passwordless authn between ansible and docker-hosts.  : ssh-copy-id -i root@docker-hosts (uncomment Permit Root login, set password authentication YES in /etc/ssh/sshd_config)
+		
+		
+		install docker in ansible server	
+			yum install docker 
+			systemctl start docker 
+			systemctl enable docker
+
+Step 3: Install Docker package in docker-host machine
+		
+Step 4: Install Public over SSH plugin in Jenkins 
+
+
+AT 58 min9
+		
+ 
+
+		

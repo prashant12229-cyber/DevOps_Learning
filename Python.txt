@@ -1,0 +1,311 @@
+
+Important Librabies
+
+| Level                    | Libraries                                                      | Why you need them                               |
+| ------------------------ | -------------------------------------------------------------- | ----------------------------------------------- |
+| 🐍 1. Python Core        | `os`, `pathlib`, `json`, `re`, `datetime`, `typing`, `logging` | Everyday Python/programming                     |
+| 📊 2. Data               | `numpy`, `pandas`                                              | Arrays, data processing, CSV/JSON/data analysis |
+| 🤖 3. ML/AI              | `scikit-learn`, `torch`                                        | ML concepts + deep learning                     |
+| 🧠 4. LLM/GenAI          | `transformers`, `openai`, `huggingface_hub`                    | Work with LLMs and models                       |
+| 🔗 5. LLM Frameworks     | `langchain`, `langgraph`, `llama-index`                        | RAG, agents, chains, workflows                  |
+| 📚 6. RAG                | `sentence-transformers`, vector DB clients                     | Embeddings + semantic search                    |
+| 🌐 7. Backend/Production | `fastapi`, `pydantic`, `httpx`, `uvicorn`                      | Build and deploy AI APIs                        |
+
+
+
+Python : Focused on High readability of code, Uses white spaces and indentation.
+		 High-level programming language, Interpreted, dynamically type language.
+		 Open Source, Platform Independent
+		 Python can be used on a server to create web applications.
+		 
+
+Usage : Automation, DevOps, Web Development, Data Science, AI/ML
+
+How to send output on console:  print("Hello world")
+
+Python Installation
+	first check python is available : Download the python from https://www.python.org/
+									  Add in Environment Variable of system  : PYTHON_HOME
+									  check the version -> python --version
+								
+Note : python Script written in file_name.py extention
+	   run ->  python file_name.py 
+	   
+	   
+
+		   
+		   To get the datatype of any variable : print(type(variable_name))
+
+Note : Whenever we enter input in python, python by default consider it as string.
+
+User input : how to take the values from user
+			 
+			 name = input("Enter your name: ")
+			 print("Welcome", name)
+	
+			 Note : The input that user enters always comes in string format, than further we can typecast the value acc to requirement
+					age = int(input("Enter age: "))
+
+Note :  IDE we use for Python development will be "Visual Studio"
+
+Print Function : What every we write inside print function will be the output on the console
+				 use (" Text to Print") or (' Text to Print ') 
+				 
+Note : By default, the print() function ends with a new line. If you want to print multiple words on the same line, you can use the end parameter
+		print("Hello World!", end=" ")
+		print("I will print on the same line.")
+		
+Output : Hello World! I will print on the same line
+
+
+Comment in python : Use """ in the begining and """ at the last of the comment to make multiline comment.
+					Use # to make single line comment.
+					
+
+
+Variable : variable use to hold any value, in python no need to explicitly define the data type of variable
+		   name="prashant" 		-> print(name)					//String
+		   age=32				-> print(age)					//int
+		   engineer=true		-> print(engineer)				//boolean
+		   weight=72.5			-> print(weight)				//float
+		   
+Camel Case Variable : Each word, except the first, starts with a capital letter:
+		Ex: myVariableName = "John"
+
+Pascal Case : Each word starts with a capital letter:
+		Ex : MyVariableName = "John"
+		
+Snake Case : Each word is separated by an underscore character:
+		Ex : 	my_variable_name = "John"
+
+
+Note : If we have collection like list or tupple than python allows to extract each value into variables like	
+		fruits = ["apple", "banana", "cherry"]
+		x, y, z = fruits
+		here x=apple, y=banana, z=cherry
+		
+
+
+Data Types
+
+Text Type:			str
+Numeric Types:		int, float, complex
+Sequence Types:		list, tuple, range
+Mapping Type:		dict
+Set Types:			set, frozenset
+Boolean Type:		bool
+Binary Types:		bytes, bytearray, memoryview
+None Type:			NoneType
+
+Note : Use predefined function type(variable), to get know the data type of any variable.
+ 
+Numbers: int, float and complex (1j, 2j, 3j)
+
+
+
+Type Conversion: You can convert from one type to another with the int(), float(), and complex() methods:
+
+x = 1    # int
+y = 2.8  # float
+z = 1j   # complex
+
+#convert from int to float:
+a = float(x)
+#convert from float to int:
+b = int(y)
+#convert from int to complex:
+c = complex(x)
+
+		   
+
+String: Strings in python are surrounded by either single quotation marks, or double quotation marks.
+			'hello' is the same as "hello".
+		
+		You can use quotes inside a string, as long as they don't match the quotes surrounding the string:
+		print("It's alright")
+		print("He is called 'Johnny'")
+		print('He is called "Johnny"')
+
+Negtive indexing: Negative indexing in Python means accessing elements from the end of a sequence using negative numbers.
+				 we can easily access the last item of the string
+
+Normal indexing
+ P   r   a   s   h   a   n   t
+ 0   1   2   3   4   5   6   7
+ 
+Negetive indexing
+ P    r    a    s    h    a    n    t
+-8   -7   -6   -5   -4   -3   -2   -1
+
+
+
+Modify String :
+	The upper() method returns the string in upper case:
+	The lower() method returns the string in lower case:
+	The strip() method removes any whitespace from the beginning or the end: The space exist in starting and at last of string.
+	The replace() method replaces a string with another string:
+	The split() method returns a list where the text between the specified separator becomes the list items.
+	
+
+Format - Strings: As we learned in the Python Variables chapter, we cannot combine strings and numbers like this:
+	
+	Wrong way :
+		age = 36
+		#This will produce an error:
+		txt = "My name is John, I am " + age
+		print(txt)
+	
+	But we can combine strings and numbers by using f-strings or the format() method!
+	
+Note : F-String was introduced in Python 3.6, and is now the preferred way of formatting strings.
+		To specify a string as an f-string, simply put an f in front of the string literal, and add curly brackets {} as placeholders for variables and other operations.
+		
+		f-string in Python means formatted string literal. It lets you easily put variables or expressions directly inside a string.
+		
+		Create an f-string:
+		age = 36
+		txt = f"My name is John, I am {age}"
+		print(txt)
+		
+	
+A placeholder can include a modifier to format the value.
+A modifier is included by adding a colon : followed by a legal formatting type, like .2f which means fixed point number with 2 decimals:
+
+Display the price with 2 decimals:
+	price = 59
+	txt = f"The price is {price:.2f} dollars"
+	print(txt)
+
+Escape character: To insert characters that are illegal in a string, use an escape character. An escape character is a backslash \ followed by the character you want to insert.
+
+txt = "We are the so-called "Vikings" from the north."			// this will give error
+txt = "We are the so-called \"Vikings\" from the north."		// the correct way to use  escape character.
+
+other Escape character :  \'  , \\ ,  \n,  \r, \t , \b ,\f
+
+
+Python Collections 
+
+There are four collection data types in the Python programming language: All the collections can have multiple data type value at once
+
+List is a collection which is ordered and changeable. Allows duplicate members.
+Tuple is a collection which is ordered and unchangeable. Allows duplicate members.
+Set is a collection which is unordered, unchangeable*, and unindexed. No duplicate members.
+Dictionary is a collection which is ordered** and changeable. No duplicate members.
+
+
+List: data type used to store multiple items in a single variable. Lists are created using square brackets:
+	  Example: thislist = ["apple", "banana", "cherry"]
+			   print(thislist)
+			   
+	  Duplicate  value allowed
+	  List are mutable, meaning that we can change, add, and remove items in a list after it has been created.
+	  List are Ordered, means the elements maintain a specific sequence/order, and you can access them using an index.
+	  
+
+Basic Functions
+	Access Item: thislist[0], thislist[-1]
+	Change Item : thislist[0] = grappes
+	Add Item : thislist.append("Orange")
+	Remove Item : thislist.remove("banana")
+	
+	For Loop
+			for x in thislist
+			  print(x)
+			  
+	Index loop
+			for i in range(len(thislist)):
+				print([i])
+				
+	While loop 
+			while (i<len(thislist):
+				print(thislist[i])
+				i=i+1
+		
+	Sorting : thislist.sort()
+	copy : list1=thislist.copy()
+	join list : list3 = list1 + list2
+	
+Tuple: Tuples are used to store multiple items in a single variable.
+		A tuple is a collection which is ordered and immutable and allow duplicate values. The order of Items in tuple can not be change.
+		Tuples are written with round brackets*.
+		First Item have index "0"
+		
+Declaration: thistuple = ("apple", "banana", "cherry")
+			 print(thistuple)
+
+Access : print(thistuple[0])	
+		 print(thistuple[-1])		//print last value
+
+Range : print(thistuple[2:5])
+Tuple to List : x = ("apple", "banana", "cherry")
+				y = list(x)				//convert tuple to list
+				y[1] = "kiwi"			//changing the Value at index 1
+				x = tuple(y)			
+
+Set : A set is a collection which is unordered, unchangeable*, and unindexed.
+	  Sets are written with curly brackets.
+	  Set items are unordered, unchangeable, and do not allow duplicate values.
+	  
+	  
+	thisset = {"apple", "banana", "cherry"}
+	print(thisset)
+
+
+
+Dictionary : Dictionaries are used to store data values in key:value pairs.
+			 A dictionary is a collection which is ordered*, changeable and do not allow duplicates.
+
+
+			thisdict = 	{
+			"brand": "Ford",
+			"model": "Mustang",
+			"year": 1964
+			}
+Access : 	print(thisdict)			
+			print(thisdict["brand"])		//print specific Item of dictionary.
+			
+			
+			
+Conditional statements: if, if elif, if elif else, 
+		shorthand if :  if a > b: print("a is greater than b")
+		
+Match statement : Instead of writing many if..else statements, you can use the match statement.
+
+day = 4
+match day:
+  case 1:
+    print("Monday")
+  case 2:
+    print("Tuesday")
+  case 3:
+    print("Wednesday")
+  case 4:
+    print("Thursday")
+  case default :
+	print("default")
+	
+	
+-----------------------	
+Python Functions: A function is a block of code which only runs when it is called. A function can return data as a result.
+					We can return multiple value in python function seperated them by comma
+					Function name follows the same rules that we have for variables.
+					
+					Parameter: The variable defined in function during creation of function.
+					Arguments: The values pass to the function during the calling of the function.
+					
+Note : Function definitions cannot be empty. If you need to create a function placeholder without any code, use the pass statement.
+
+
+What is *args? : The *args parameter allows a function to accept any number of positional arguments.
+Inside the function, args becomes a tuple containing all the passed arguments:
+	
+Example:
+def my_function(*args):					// declaring only one argument with *
+  print("Type:", type(args))
+  print("First argument:", args[0])
+  print("Second argument:", args[1])
+  print("All arguments:", args)
+
+my_function("Emil", "Tobias", "Linus")		//calling the finction with multiple argument	
+	

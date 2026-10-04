@@ -1,0 +1,211 @@
+Machine Learning
+: providing the exisiting data to an algorithm which is going to generate the patterns between the input and output of data.
+	once we are done with generating the patterns on existing data, we will input new data to algorithm so that 
+		it can predict the answer on the basis of existing patterns
+
+Machine Learning (ML) = machines learn patterns from data.
+Deep Learning (DL) = a type of ML that uses multi-layer neural networks to learn complex patterns.
+
+
+	
+Subset of AI is ML, Subset of ML is DL.
+	
+
+|                       | Machine Learning                                              | Deep Learning                                |
+| --------------------- | ------------------------------------------------------------- | -------------------------------------------- |
+| Basic idea            | Learn patterns from data                                      | Learn complex patterns using neural networks |
+| Typical algorithms    | Decision Tree, Random Forest, XGBoost, SVM, Linear Regression | Neural Networks, CNN, RNN, Transformer       |
+| Feature engineering   | Often needs humans to select/create features                  | Can learn features automatically             |
+| Data requirement      | Can work well with relatively smaller datasets                | Usually benefits from large datasets         |
+| Computing requirement | Usually lower                                                 | Usually much higher                          |
+| Training time         | Generally faster                                              | Generally slower                             |
+| Images/video          | Can be used, but requires feature engineering                 | Excellent for complex visual tasks           |
+| Language              | Traditional ML can work with text features                    | DL powers modern LLMs                        |
+
+
+Note : The big difference in ML and DL is, in ML we have to classify the feature but in DL automatically create the features using its neural network.
+	   more the neural network layer will create or understand the feature better.
+	   
+	   
+	   
+Type of ML
+	Supervised : When we provide both input data and output data, and on the basis of relation between input and output 
+					ML Identifies the pattern, called supervised ML.
+					
+	Example : let we have data set of Student data, sitting for placements
+	
+	CGPA	Attendance			PLacement status
+	7.5		85%					Placed
+	8.5		90%					placed
+	6.0		90%					Not Placed
+	7.5		60%					Not Placed
+	6.0		60%					Not Placed
+	
+	Here : ML can identify a pattern like when both CGPA > 7.0 and Attendance > 80%, than only the student is getting placed in company.
+			This what we called Supervised learning.
+	
+	We have only two types of data types, one is Numerical( Age, Weight, CGPS, Phone number) , and second is categorical(Nation, Gender)
+	
+	
+								Type of Machine Learning
+											|
+				----------------------------|-----------------------------------------|-------------------------------------|
+				|							|										  |										|
+				|-> Supervised				|-> Clustering							  |-> Semi Supervised Learning			|-> Reinforcement
+				|-> Classification 			|-> Dimensionality reduction			  
+											|-> Anomaly Detection
+											|-> Association Rule Based Learning
+								
+	
+	Type of ML
+	Supervised ML have two component.
+		- regression  : When the Output data of Given Training dataset is numerical.
+		- classification : when output data is of categorical data.
+
+	
+	
+		
+	
+	Un Supervised : WHen we have only input data, so we can not predict the pattern here, so we apply the below algorithm with data.
+		
+					Clustering : we plot the position of data on, n dimensional system.
+					example : let we have data like
+															  CGPA
+																|				X
+							  IQ		CGPA    Labels          |	X			
+							  70		7.0     moderate        |
+							  60		6.0     below moderate  |			X
+							  100		9.0     Execllent       |--------------------  IQ
+							  
+							  We can create a cluster for the data points who are near to each other and treat them a part of same cluster.
+							  We can provide the labels to each data set accordingly
+							  
+							  The Clustering algorithms can place the data points into n dimensional space . 
+					
+	
+					
+					Dimentionality Reduction : Sometime we have the data that could have huge input colomns, as we disccussed that high dimensional data
+												is more precise, but after some extent, having more dimension is not usefull and make the algorithm slow.
+												So using the Dimentionality Reduction we removes those extra
+												dimensions from data.
+												
+												Also called Feature Extraction.
+								
+								Example : We have data like 
+								No of Rooms				No of Bathrooms	 -> Cost of House
+								
+								Here The dimentionality reduction algorith will convert the input data of No Of Room and Bathroom into -> Total Sqfeet Area.
+								
+								Once we reduce the high dimensions data into low dimension data, we can easily plot the data point on Coordinate System.
+								
+					
+					
+					Anomaly Detection : When the new Data point	is out of the cluster, than it is consider as a Anomaly
+										This detection is known as Anomaly Detection.
+										
+										
+					Association Rule Based Learning : Let suppose an example of Super Market, where we read the historical data and fetch the pattern and found
+													  a patter that	Whenever someone buys the milk, also buys the eggs as well.
+													  So Super Market keep the Milk and Eggs just near by to each other.
+					
+					
+	Semi Supervised : Where We are going to label some data, through which the algo automatically labels the whole data.
+		    Example : Google photos, it labels the photos based on the availability of a person in mulitple photos.
+	
+	Reinforcement : This type of ML, does not have any data initially and it actually start its journey from zero,
+					and learn from its mistake and rewards. 
+					It is more like human, who learn the life how to live by making mistake.
+					
+					
+
+
+------------------------------------Batch vs Online ML
+
+Batch ML (Offline Learning) : We use complete set of Data, mean there is no increamental training.
+								Here we use to do machine learning on our local machine, once it is done than we migrate the model on production.
+								this system once we make it ready than it is not going to update itself timely.
+								
+Online ML : The model that we create using ML, must be upgrade itself timely that is why we inttroduce Online ML.
+			under this ML, we use to make our machine learn periodically.
+							
+
+Note : We have "River" library that is merge of creme and scikit-multiflow libraries.
+	   River library is go to do library for doing machine learning on streaming data.
+	   
+	   
+Learning rate : it is basically the speed at which we learned our model, it should not be so fast and so slow.
+
+out of core learning : when we have data set very huge due to which we can not learned our model at once.
+						We convert the large data set into small n number of datasets, after which we can do anything like batch learning or online learning.
+						
+		Disadvantage: not necessary that we will get the required output after ML.
+		
+		
+
+
+------------------------Instance based ML vs Model Based ML
+
+
+There are two ways of Learning 
+
+one is memorizing (Instance based learning)
+Example: 
+			CGPA
+			|					X	X
+			|					  X   X
+			|						X	
+			|  X  X
+			|	X	X
+			|	  X
+			|
+			|-------------------- IQ
+			
+			KNN ALgorithm : Here we can see the Students having Lower IQ and CGPA is not placed, but the Student having higher IQ and CGPA get placed.
+							So whenever we find a new data point, the algo will compare it with near by data points and predict it can be placed or not.
+
+
+
+second is generalizing(Model Based Learning) : By understanding the basic principle or concept or by understanding the patterns, called Model based learning.
+Now taking the same example with Model based learning.
+
+			CGPA
+			|					X	X
+			|					  X   X
+			|						X	
+			|  X  X
+			|	X	X
+			|	  X
+			|
+			|-------------------- IQ
+			
+			
+			Here the Algorithm will take the input data, and draw a decision boundary around the data points which are near to each other,
+			once the algorithm have the decision boundary, now we dont have the training data even than algorithm can predict the next data point will get placed or not.Semi
+			
+			| **Usual/Conventional Machine Learning**                                             | **Instance-Based Learning**                                                                                |
+| ----------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| Prepare the data for model training                                                 | Prepare the data for model training. **No difference here.**                                               |
+| Train model from training data to estimate model parameters, i.e. discover patterns | **Do not train model.** Pattern discovery postponed until scoring query received.                          |
+| Store the model in suitable form                                                    | There is **no model to store**.                                                                            |
+| Generalize the rules in the form of model, even before scoring instance is seen     | No generalization before scoring. Only generalize for each scoring instance individually as and when seen. |
+| Predict for unseen scoring instance using model                                     | Predict for unseen scoring instance using **training data directly**.                                      |
+| Can throw away input/training data after model training                             | Input/training data must be kept since each query uses part or full set of training observations.          |
+| Requires a known model form                                                         | May not have explicit model form.                                                                          |
+| Storing models generally requires less storage                                      | Storing training data generally requires **more storage**.                                                 |
+
+Here in Model based learning, we generate a model on the basis of input parameters which is going to create a boundary for parameters.
+that decision boundary is obviously a curve that must a equation.
+
+
+
+Challenges in ML
+
+1. Data Collection : We need huge amount of data to train any Model, which is not easily available.
+2. Insufficient Labels for data : We need to label each dataset on which we are training our model.
+3. Non Representative Data
+4. Poor Quality data
+5.Irrelevant feature.
+6. Overfitting: 
+7. Underfitting : opinion making on few data points
+8. Software Integration : Integrating model with existing Software.
+9. Huge Cost

@@ -1,0 +1,2179 @@
+Generative AI
+
+What is generative AI ??
+GenAI is a type of artificial intelligence that have capability to create new content such as text, images, music or code that never exist.
+by learning patterns from existing data, mimicking human creativity.
+
+base of AI is machine learning where we provide large dataset to mathematical algorithms, which extract patterns from the given dataset and than it can predict
+new patterns or new content. like predicting new stock price after reading historical data etc.
+
+Phases through which the GenAI has to go 
+	
+	Artificial Intelligence -> MachineLearning -> Deep Learning -> Generative AI
+	
+Artificial Intelligence : it referes to machine capabilities of performing task typically need human intelligence.
+							like decision making, problem solving, understanding language.	
+							
+Machine learning : learning from data, no explicit programming, identify patterns, make predictions.
+Types of machine learning
+		
+		Supervised learning: use labeled data to train models, like predicting stock price on the basis of historic data.
+		unsupervised learning: finding hidden pattern without labels like grouping customer on the basis of behaviour.
+		Reinforcement Learning : involve models learning through trails and errors, where model will learn by interecting with environment and improve itself 
+									trough trial and errors.
+									
+Machine learning is like : Teaching a dog to fetch, throw the ball repeatedly and through repetition and rewards the dog learns.
+							after every repetition the machine learns more.
+							
+
+Deep Learning: Neural networks to automatically learn features from raw data.
+				A Neural Network is a machine-learning model that learns patterns from data and uses those patterns to make predictions or decisions.
+	Example:
+	Recognizing faces in the crowd or understanding spoken language
+	Convolution Neural network (CNN) for image data
+	Recurrent Neural Network (RNN) for sequential data like text
+	Transformers, A Transformer is a type of neural-network architecture designed especially for working with sequences of data, particularly text.
+	
+Foundation Model : the model that were trained on huge dataset.
+
+
+
+GenAI : AI models that generates new original content that does not exist before, weather it is writing text, drawing image, composing music, or even generating code.
+		
+How GenAI works
+	
+	Train -> Learn  -> Output generation -> Feedback loop 
+	
+	1. Training Data : Training a AI model on large data set of Audio, Video, Text.
+	2. Learn :  Neural Network of AI model learns pattern from the data.
+	3. Generate : Generate the data on the basis of the data it was learned.
+	4. Feedback Loop : Taking the feedback and improve itself.
+	
+Type of Generative AI models
+	
+	1. Generative Adversarial Network, or GANs : For Image Generation, it have two neural networks Generator and discriminator
+	2. Variational Autoencoders or VAEs : Reconstructing data and Generating a new variation. Encode data into a lower dimentional space(latemt space) capture the feature of the data then decode from this space to create new variation of the original data. 
+											Vaes are often used to reconstruct medical images such as filing in missing or damaged parts of MRI.
+	3. Transformer models (Chat GPT) : This model calculates that which words are important to each other in a sentence.
+		
+		Example: 
+		"I deposited money in the bank."  : The word bank could mean a financial institution.
+		"I sat near the river bank."    : Here bank has a different meaning.
+
+The Transformer looks at surrounding words and determines the relationship:
+
+
+Transformer architecture
+
+		
+		     Input Text
+                 │
+                 ▼
+            Tokenization
+                 │
+                 ▼
+             Embeddings
+                 │
+                 ▼
+        Positional Information
+                 │
+                 ▼
+        ┌──────────────────┐
+        │ Self-Attention   │
+        └────────┬─────────┘
+                 │
+                 ▼
+        ┌──────────────────┐
+        │ Feed Forward NN  │
+        └────────┬─────────┘
+                 │
+                 ▼
+          Transformer Layer
+                 │
+                 ▼
+          Transformer Layer
+                 │
+                 ▼
+                 ...
+                 │
+                 ▼
+              Output
+	
+
+--------------
+
+What are LLM's : llms are trained on large datasets, massive amount of text from book, websites, research papers.
+					ability to process, generate and interact with human in natural language.
+					
+Transformers are the heart of LLMs, Model uses the mechanism self attention
+important feature is ability of understanding
+
+LLM before processing the text, it breakdown the text into small pieces called tokens.
+these tokens can be entire words, part of the subwords or even a single character.
+
+LLM generates text one word or token at a time, predicting  the next word in sentence.
+
+example: The Sky is "blue"  the prediction will continue until it complete the desired output
+
+
+Token and Tokenization : A token is a smallest unit of text that model can understand
+ 
+Converting any text or prompt into mulitple tokens, and each token is dictionary (key, value)
+example: I love cricket
+
+"I"        → 501
+
+"love"     → 892
+
+"cricket"  → 14562
+
+sentence : [501, 892, 14562] : These integers are the input to the AI
+
+Note : The LLM models process the tokens not sentences. 
+		user https://platform.openai.com/tokenizer  to view, how tokenization happens
+		
+Tokens are processed one by one, the model understand the patterns and relationship between tokens.
+each model have limit to process the specific number of tokens also called context window.
+
+
+
+
+
+-----------------------------------
+Langchain : It is a opensource framework that helps in building LLM based applications.
+			it provides modular components and end-to-end tools that help developers build complexAI applications, such as chatbot, Q&A system
+			Retrieval-augmented generation(RAG), Autonomous Agents.
+			
+			It is a library that have lots of functions that orchestrate the complete workflow of LLM powered applications.
+
+in simple words LangChain is a Python framework that helps you build AI powered applications by connecting an LLM with other things like databases, 
+APIs, tools, memory, and documents.
+it is basically a orchestrator.
+
+it support all the major LLMs
+Simplifies developing LLM based applications
+integration available for all major tools
+
+While building a GenAI Model, we have lots of task which are integrated to each other like below
+
+	
+	Bunch of Doc  ->  Cloud Storage(S3) -> Document loader ->  Page 1 -- Text Splitter -> Embedding vector 1
+															   Page 2 -- Text Splitter -> Embedding vector 2
+															   Page 3 -- Text Splitter -> Embedding vector 3
+															   Page 4 -- Text Splitter -> Embedding vector 4
+																		|	
+															            |
+																		
+																    Vector Database -> sementic search  -> LLM (Brain)  -> Output
+																	
+Langchain provides builtin functions using which we can integrate all of the above steps with eachother.
+So tommorrow if we have to replace any of the step like cloud provider instead of AWS we want GCP, than we can do that easily without any hustle.
+So basically Langchain is Orchestrating the whole process of LLM Powered Application system.
+
+
+Benefits of Langchain
+1. Concept of chains : A sequence of steps where the output of one step becomes the input of the next step.
+2. Model augnostic Development : means LLM model independent, we can change any LLM at any point of time without making big changes, just need to change few code.
+3. Complete eco system : it provides multiple functions to perform each task like document loader, text splitter, embedding, databases.
+4. memory and state handling : it keeps the state of last chat alive through which it answer the next question on the basis of previous chat.
+
+Use case of Langchain
+1. Conversational chatbots. : first layer of customer handling replaces the call centre.
+2. AI knowlede assistant : also the chatbot, but have access of our data using which it can answer precisely.
+3. AI Agents : not only chat, but also perform some task.
+4. Workflow automations.
+
+
+Other Frameworks like langchain that do the same things 
+1.  LlamaIndex
+2.  Haystack 
+
+
+-----------------------------
+Component of Langchain
+1. Models
+2. Prompt
+3. Chains
+4. Memory
+5. Indexes
+6. Agents
+
+Models : Models are the core interface through which we interact with LLM Models.
+		 LLM solves the problem of NLP(Natural Laguage Processing) i.e  NLU (natural language understanding) and CATG (Context Aware text Generation).
+
+A LLM model having 100 billions of parameters could be the size of roughly 200GB and RAM size of 400GB, each parameter occupy 2 byte of space.
+1 TB parameter LLM model could occupy arounf 2TB of space.
+
+So these LLM models Runs on huge servers, that costs millions of dollors, so we have API's using which we can connect to those LLM models, and pay as per our 
+usage.
+
+The different LLM providers write their API's in different languages, so what if I want my LLM based application to use more than one LLM??
+Here Langchain come into the picture, Langchain now act as a interface to interact with multiple LLM models, without making much changes in code.
+
+Example: 1 : Connect with openAI
+
+from langchain_openai import ChatOpenAI
+from dotenv import load_dotenv
+
+load_dotenv()
+
+model = ChatOpenAI(model='gpt-4', temprature=0)
+result = model.invoke("Hey Now Give me the Answer please")
+print(result.content)
+
+
+Example : 2
+
+Connect with Anthropic
+
+from langchain_anthropic import ChatAnthropic
+from dotenv import load_dotenv
+load_dotenv()
+
+model= ChatAnthropic(model='')
+result=model.invoke("HI How are you")
+print(result.content)
+
+
+Top 5 LLMs in market
+
+1. OpenAI → GPT
+	GPT-5.6
+ ├── Sol    → highest capability
+ ├── Terra  → balance of intelligence & cost
+ └── Luna   → cost-efficient / high-volume
+ 
+2. Anthropic → Claude
+	Claude
+ ├── Opus 5   → highest capability
+ └── Sonnet 5 → strong capability + lower cost
+ 
+3. Google → Gemini
+Gemini
+ ├── Gemini 3.1 Pro
+ ├── Gemini 3.7 Flash
+ ├── Gemini 3.1 Deep Think
+ └── Gemini 3.5 Flash-Lite
+ 
+4. Meta → Llama
+5. xAI → Grok
+
+
+there are two type of AI models
+1. Language models : Text In and Text Out 
+2. Embedding models : Text In and Vextor Out.  (for semantic search)
+
+
+
+2. Prompts : Input given to LLM models.
+			 Using Langchain we can create very powerful and dynamic and reusable prompts.
+			 
+	Example:
+	
+	from langchain import PromptTemplate
+	prompt = PromptTemplate.from_template('summarize {topic} in {emotion} tone')
+	print(prompt.format(topic='Cricket', emotion='fun'))
+	
+Note: Now whenever the user will provide his own prompt than it will converted in a dynamic prompt which will give output of "FUN" tone.
+	
+
+3. Chains : Using chains we can build the pipeline in langchain.
+			it automatically make the output of one stage input of another stage. 
+			We can build parrallel chain, conditional chains using this.
+
+
+4. Indexes : Indexes connect our application to external data sources like PDFs, Websites and databases.
+			 it consist of Document loader, text splitter, vector store, retrievers, SO that we can get the answers from private data as well.
+
+
+5. Memory : ALL the API calls we made on LLM are stateless. so let if first question we asked "Who is Rahul Gandhi", LLM will give me the answer
+			but if I made a next question like "What is his date of birth" than LLM don't know, whom we are talking about.
+			Here the concept of memory of Langchain help us to get the answer, because using the memory concept it remembers the previous state of chat as well.
+			
+			Type of memory
+			ConversationBufferMemory : Store a transcript of recent message, Great for short chats but can grow quickly.
+			ConversationBufferWindowMemory : Only keeps the last N interactions to avoid excessive token usage.
+			Summarizer-BasedMemory : Periodically summarize older chats segment to keep a condenced memory footprint.
+			CustomMemory : For Advanced Usecase, You can store specialized state(the users preferences or key facts about them)
+			
+6. Agents : If LLM have the capability of NLP (NLU + Text Generation) than why not it can do something.
+			Like when we ask to book the cheapest flight for given dates etc
+			it have accessibility of tools like indigo website etc.
+			
+			
+
+---------------------
+Langchain have a component called models	
+
+	Types :
+	Language Model : Use to get the Output of our question using LLM brain.
+	Embedding Models :  Use to generate Embedding vector of text. For making semantic search.
+	
+		
+		Closed Language model: Paid Models. like OpenAI, Claude, Gemini.
+				LLMs : General language model, use for Text Generation, Code Generation Q&A. 
+				Chat Models: use for conversational task. for Agents, Coding assistant, CHat bot. More advanced version of LLMs, so we will use Chat models.
+		Free models : hugging face
+		
+
+Implementation--------
+
+Create Directory Langchain
+Open it in Visual Studio
+Create a Virtual env : python -m venv venv
+Activiate Virtual Environment :  a:\Devops\AI\Langchain\venv\Scripts\activate
+
+If getting error run the command to run the scripts : Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+than run 
+	PS A:\Devops\AI\Langchain> .\venv\Scripts\Activate
+	(venv) PS A:\Devops\AI\Langchain> 
+
+Now install all the required libraries in virtual env, libraries are written inside requirement.txt
+	run : pip install -r requirement.txt
+
+Create API Key on : https://platform.openai.com/ , we are going to use API_KEY in our project to communicate with LLM.
+
+For communicating to LLM via Langchain, we need to import package of that model which reside in langchain like below
+if we are communicating to openAI than use
+	
+	
+This is how we can get the answer from LLMs using LLM models, next we will see chat models.	
+	
+	from langchain_openai import openAI
+	from dotenv import load_dotenv				//this package will get the API keys of LLm model into our project.
+	
+	load_dotenv()								//loading .env file into our project.
+	
+	llm=OpenAI(model='gpt-5.6-terra')
+	result = llm.invoke("What is the capital of india")
+	print(result)
+	
+------------------------------OpenAI Chat model
+
+.env API Key
+OPENAI_API_KEY = "key-value"
+	
+ChatModel :
+
+	from langchain_openai import ChatOpenAI
+	from dotenv import load_dotenv
+	load_dotenv()
+	model = ChatOpenAI(model='gpt-4', 'maximum_completion_tokens=')
+	result=model.invoke("what is the capital of india")
+	print(result.content)
+
+Note:  When we wer using OpenAI model we were only getting the content in output, but here in chatOpenAI model we will getting metadata along with Content
+		like : additional kwargs, token_usage, prompt_token, total_token and lot more. 
+	
+	
+temperature: it is a parameter that controls the randomness of a language models output. it affects how creative and deterministic the response are.
+				Lower value : more deterministic and predictable
+				higher value : more creative, random and diverse.
+				
+				If we keep temperature=0, than we will get the same answer always of same question.
+
+maximum completion token : This parameter decide how much token should use during response generation.
+
+
+----------------Claude model Created by Anthropic.
+Anthropic : https://console.anthropic.com
+
+.env file API key
+ANTHROPIC_API_KEY = 'key-value'
+
+
+Example:
+	
+	from langchain_anthropic import ChatAnthropic
+	from dotenv import load_dotenv
+	
+	load_dotenv()
+	
+	model = ChatAnthropic(model = 'claude-3-5-sonnet-20241022', temperature=1.8)
+	result=model.invoke("")
+	print(result.content)
+	
+
+-------------------Gemini Model
+Gemini : https://ai.google.dev
+
+API Key
+GOOGLE_API_KEY= 'key-value'
+
+
+Example:
+
+from langchain_google_genai import ChatGoogleGenerativeAI
+from dotenv import load_dotenv
+
+load_dotenv()
+
+model=ChatGoogleGenerativeAI(model='gemini-1.5-pro')
+result=model.invoke('what is the capital of india')
+print(result.content)
+
+
+----------------------------Free and Opensource Chat models
+What opensource provide ?? 
+	Control over deployment
+	data privacy
+	customization
+
+Opensource models in market ?
+	LLAMA	(Meta AI)
+	Mixtral
+	Mistral
+	Falcon  and so on.
+	
+Hugging Face : The Largest Repository of Open SOurce LLMS
+
+Way to Use open Source LLM ?? :
+	1. Download any Opensource LLM and run it local server.
+	2. Using Hugging face inference API. (Similar like OpenAI, Gemini, Anthropic, Hugging face provide the API to use OpenSource LLM)
+		Using HF inference API we can access lots of opensource LLMs.
+	
+	
+How to Use Opensource LLMs : sign up to : https://huggingface.co/
+Create a access token : HF_TOKEN = "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"
+
+
+Example: 
+
+from langchain_huggingface import ChatHuggingFace, HuggingFaceEndpoint
+from dotenv import load_dotenv
+
+load_dotenv()
+
+llm=HuggingFaceEndpoint(    
+
+    repo_id="meta-llama/Llama-3.1-8B-Instruct",
+    task = 'text-generation'
+)
+model =  ChatHuggingFace(llm=llm)
+
+result = model.invoke('Ek Poem likh de mere liye maa k naam pr')
+print(result.content)
+
+
+------------------------- Now How to Run Opensource LLM on local server.\
+Note : When we run the below python code it will bring all the Llama LLM model file on local machine and than run it.
+		it may be around 500 MB of size.
+		By default the LLM will get download in C drive, but if we want to download it at specific location than, we need to provide that location
+		as below in code.
+
+
+from langchain_huggingface import ChatHuggingFace, HuggingFacePipeline
+import os
+
+os.environ[HF_HOME] = 'D:/hugging_face '
+
+llm = HuggingFacePipeline.from_model_id(
+    model_id='TinyLlama/TinyLlama-1.1B-Chat-v1.0',
+    task='text-generation',
+    pipeline_kwargs=dict(
+        temperature=0.5,
+        max_new_tokens=100
+    )
+)
+model = ChatHuggingFace(llm=llm)
+
+result=model.invoke("")
+print(result)
+
+
+
+
+---------------------------------------------Embedding models Implementation.
+We use Embedding model to generate the Vector number of any text
+
+Vector Size : 1536 for small embedding models and 3072 for large Embedding models.
+
+
+Example: 
+
+from langchain_openai import OpenAIEmbeddings
+from dotenv import load_dotenv
+
+load_dotenv()
+
+embedding = OpenAIEmbeddings(model='text-embedding-3-large', dimensions=32)
+result=embedding.embed_query("Delhi is the capital of india")
+print(str(result))
+
+
+
+Example 2:
+
+from langchain_openai import OpenAIEmbeddings
+from dotenv import load_dotenv
+
+load_dotenv()
+
+embedding = OpenAIEmbeddings(model='text-embedding-3-large', dimensions=32)
+
+doc= [
+    "Delhi is capital of india",
+    "Kolkata is capital of bengal",
+    "lucknow is capital of UP"
+
+]
+#result=embedding.embed_query(docs)
+result=embedding.embed_documents(doc)
+print(str(result))
+
+
+Opensource for Generating embeddings.
+
+Example:
+
+	from langchain_huggingface import HuggingFaceEmbeddings
+	embedding = HuggingFaceEmbeddings(model_name='sentence-transformers/all-MiniLM-L6-v2')
+	text = "Delhi is a Capital of India"
+	vector = embedding.embed_query(text)	
+	print(str(vector))					// This Statement will print Vector of multi-dimenssions.
+	
+	
+-----------------------------RAG Based Document Search Application.
+
+Example:
+
+from langchain_openai import OpenAIEmbeddings
+from dotenv import load_dotenv
+from sklearn.metrics.pairwise import cosine_similarity
+import numpy as np 
+
+load_dotenv()
+
+embedding = OpenAIEmbeddings(model='text-embedding-3-large', dimensions=300)
+
+documents = [
+"Virat Kohli is an Indian cricketer known for his aggressive batting and leadership.",
+"MS Dhoni is a former Indian captain famous for his calm demeanor and finishing skills.",
+"Sachin Tendulkar, also known as the 'God of Cricket', holds many batting records.",
+"Rohit Sharma is known for his elegant batting and record-breaking double centuries.",
+"Jasprit Bumrah is an Indian fast bowler known for his unorthodox action and yorkers."
+    
+]
+
+query = 'tell me about virat kohli'
+
+doc_embeddings = embedding.embed_documents(documents)
+query_embedding = embedding.embed_query(query)
+
+scores = cosine_similarity([query_embedding], doc_embeddings)[0]        #finding nearest vector
+index, score= sorted(list(enumerate(scores)), key=lambda x:x[1])[-1]
+print(documents[index])                 #This will print the Document matching
+print('similarity score is  : ', score)
+
+
+
+
+
+--------------------------------------- Prompts
+Input instruction given to LLM
+	text based prompt : We give only text to LLM
+	multi model prompt : When we give image, voice, video to LLM for our query.
+	
+Dynamic Template : where we can take some values from user, to get to know the more accurate prompt that we can generate.
+					and can generate more accurate answer from LLM. 
+					
+	Example: 
+	from langchain_core.prompts import PromptTemplate
+	
+	#declare the template input variables in Stream lit
+	paper_input= st.selectbox("Select the Research Paper Name", ["Attention is all you need", "GPT3 Languagge model", "GANS Image senthesis"])
+	style_input= st.selectbox("Select Explanation Style", ["Beginner friendly", "Technical Code Oriented", "Mathematical Representation"])
+	length_input= st.selectbox("Select Explanation length", ["Short 1-2 Paragraph", "Medium 4-5 Paragraph" ,"20 Paragraph "])
+	
+	template = PromptTemplate(
+		"""
+			Please summerize the research paper title "{paper_input}" with the following specification
+			explanation style : {style_input}
+			Explanation length : {length_input}
+		""", input_variables=['paper_input','style_input','length_input'],
+			 validate_template=True													// This will validate weather we have all the variables in input variable or not.
+	)
+	
+	prompt = template.invoke({
+		'paper_input': paper_input,
+		'style_input': style_input,
+		'length_input': length_input
+	})
+	
+	result =  model.invoke(prompt)
+	print(result)
+	
+	
+	
+	Another way using chain :
+	
+	form langchain_openai import ChatOpenAI
+	from dotenv import load_dot_env
+	import streamlit as st
+	from langchain_core.prompts import PromptTemplate, load_prompt
+	
+	load_dotenv()
+	
+	#declare the template input variables in Stream lit
+	paper_input= st.selectbox("Select the Research Paper Name", ["Attention is all you need", "GPT3 Languagge model", "GANS Image senthesis"])
+	style_input= st.selectbox("Select Explanation Style", ["Beginner friendly", "Technical Code Oriented", "Mathematical Representation"])
+	length_input= st.selectbox("Select Explanation length", ["Short 1-2 Paragraph", "Medium 4-5 Paragraph" ,"20 Paragraph "])
+	
+	model= ChatOpenAI()
+	
+	template=load_template('template.json')
+	
+	chain = template | model
+	 result = chain.invoke({ 
+		
+		'paper_input': paper_input,
+		'style_input': style_input,
+		'length_input': length_input
+	
+	})
+
+	print(result.content)
+	
+	
+
+Note: We have used PromptTemplate, to pass the prompt to LLM, We can also use fstring to do the same. But	
+		Using the PromptTemplate we can validate the Template that we can't do in fstring
+	    Reusability of Prompts
+		
+		
+		
+
+---------------------------------Small Chatbot application
+
+from langchain_huggingface import ChatHuggingFace, HuggingFaceEndpoint
+from dotenv import load_dotenv
+
+load_dotenv()
+
+llm=HuggingFaceEndpoint(    
+
+    repo_id="meta-llama/Llama-3.1-8B-Instruct",
+    task = 'text-generation'
+)
+model =  ChatHuggingFace(llm=llm)
+
+while True :
+    user_input = input(' you : ')
+    if user_input == 'exit' :
+        break
+    result = model.invoke(user_input)
+    print("AI :" , result.content)
+	
+	Note : The above chat bot application dont have context, it will not remember the old chat history.
+
+
+---------------------Chatbot with Chat history
+
+from langchain_huggingface import ChatHuggingFace, HuggingFaceEndpoint
+from dotenv import load_dotenv
+
+load_dotenv()
+
+llm=HuggingFaceEndpoint(    
+
+    repo_id="meta-llama/Llama-3.1-8B-Instruct",
+    task = 'text-generation'
+)
+model =  ChatHuggingFace(llm=llm)
+
+chat_history = []
+
+while True :
+    user_input = input(' you : ')
+    chat_history.append(user_input)
+    if user_input == 'exit' :
+        break
+    result = model.invoke(chat_history)
+    chat_history.append(result.content)
+    print("AI :" , result.content)
+
+print(chat_history)
+
+Note : the chat_history printed at last not have proper data like which message is from which side?? which message is of AI and which is from User
+		we should maintain the chat history with specification. like dictionary
+		
+		So langchain provide it solution, it have builtin classes who manages this all.
+	
+Langchain have precisely three type of messages
+	system message
+	human massage : message sent from user.
+	AI message : message generated by LLM
+		
+		
+Example : This is how we can maintain the message classification in chat history
+
+from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
+from dotenv import load_dotenv
+from langchain_huggingface import ChatHuggingFace, HuggingFaceEndpoint
+
+load_dotenv()
+
+
+llm=HuggingFaceEndpoint(    
+
+    repo_id="meta-llama/Llama-3.1-8B-Instruct",
+    task = 'text-generation'
+)
+model =  ChatHuggingFace(llm=llm)
+
+chat_history = [
+    SystemMessage(content='You are a helpful AI assistant')
+]
+
+while True :
+    user_input = input(' you :' )
+    chat_history.append(HumanMessage(content=user_input))
+    if user_input == 'exit' :
+        break
+    result = model.invoke(chat_history)
+    chat_history.append(AIMessage(content= result.content))
+    print(" AI : ", result.content)
+
+print(chat_history)
+
+
+
+------------------------------ChatPrompt Template 
+When we are working with list of messages
+
+from langchain_core.prompts import ChatPromptTemplate
+
+chat_template = ChatPromptTemplate([ 
+		('system', 'you are a helpfull {domain} expert')
+		('human', Explain in simple term, what is {topic})
+		
+])
+
+prompt = chat_template.invoke({ 'domain:cricketer', 'topic':'medical science' })
+
+print(prompt)
+
+
+
+
+
+
+
+-------------------------------------------------Structured Output
+
+When we provide input to LLM and get a output, the output is in unstructured format.
+Structured output refers to the practice of having language model return response in a well defined data format rather than free form text
+This makes the model output easier to parse and work programmatically.
+
+Use case:
+	Data Extraction : when we have to store the data given by LLM in to DB.
+			Example : like naukri.com we have to extract candidate Resume and on the basis of resume keywords we have to store it into DB.
+			
+	API Building : 
+	Build Agents: Structured output is very useful to make AI agents
+	
+
+Some LLM have capability to generate the structured output and some dont have capability to generate structured output.
+	LLM having capability : function available -> with_structured_output
+	LLM dont have capability : than we need to generate using "output parser"
+	
+	
+	Data formatting 
+		1. Typed Dictionary : it is a way to define in python where you specify what keys and values should exist, it help to ensure that your dictionary follows a specific structure.
+								like we have already defined a dictionary of name person which contains "Name of String" Type and "Age if Int" Type, now when another person will use the dictionary 
+								of person than he can not define age of String type.	
+		
+Example: 
+
+from langchain_huggingface import ChatHuggingFace, HuggingFaceEndpoint
+from dotenv import load_dotenv
+from typing import TypedDict, Annotated, Optional
+
+load_dotenv()
+
+llm=HuggingFaceEndpoint(    
+
+    repo_id="meta-llama/Llama-3.1-8B-Instruct",
+    task = 'text-generation'
+)
+model =  ChatHuggingFace(llm=llm)
+
+class review(TypedDict):
+    summary : str
+    sentiment : str
+
+structured_model = model.with_structured_output(review)
+result = structured_model.invoke(""" The Hardware is Great, But the Software feels bloated. There are too many pre installed apps that I can't remove.
+                                     Also, the UI looks outdated compared to other brands. Hoping for the software update to fix this.""")
+
+print(type(result))
+print(result['summary'])
+print(result['sentiment'])
+
+Output :
+
+(venv) PS A:\Devops\AI\Langchain> & a:\Devops\AI\Langchain\venv\Scripts\python.exe a:/Devops/AI/Langchain/LLMs/with_structured_output.py
+<class 'dict'>
+The Hardware is Great, But the Software feels bloated.
+neutral
+(venv) PS A:\Devops\AI\Langchain> 
+
+Note : in the above code we have tell yet to LLM that what is sentiment and what is summary, but it automatically understand for summary and sentiment what to
+		generate, When we use with_structured_output() function, it internally generate a prompt, and extract the typed dictionary format from given review.
+		it basically understand "summary" and "sentiment" that is why it gives the output in above format.
+		
+
+Annotation : We can use annotation, to tell with_structured_output function() explicitly that what to do for which Dictionary key to fetch the value.
+			in case the key we are passing the Ambiguous.
+
+Exmaple: While declaring the Typed Dictionary, we can use annotation like below.
+
+class review(TypedDict):
+    summary : Annotated[str, "A Brief summary of the review"]
+    sentiment : Annotated[str, "Return the sentiment of review, either negetive positive or neutral"]
+	
+	and other type of typed dictionary
+	sentiment : Annotated[Litral["pos", "neg"], "Return the sentiment of review, either negetive positive or neutral"]
+					//output will be from give options only 
+	key_themes : Annotated[list[str], write down all the key themes discussed in the review in a list]
+	pros : Annotated[optional[list][str]], "Write down all the pros inside a list"
+	
+	
+
+-----------------------------------Pydantic
+Pydantic is a Python library used to define the structure of data and validate that the data follows that structure.
+
+It is a data validation and data parsing library for python. it ensure that  the data you work with is correct, structured and type-safe.
+	
+	pip install pydantic
+	
+	from pydantic import BaseModel
+
+	class Employee(BaseModel):					//Typed Dictionary 
+    name: str
+    age: int
+    salary: float
+	
+	
+	Suppose someone gives you:
+	employee = Employee(
+    name="Prashant",
+    age="32",
+    salary="100000"
+	)
+	Pydantic can validate and, in many cases, convert compatible values:
+	"32"      → 32
+	"100000"  → 100000.0
+	
+	But if you provide something that cannot be interpreted as the required type:
+	employee = Employee(
+    name="Prashant",
+    age="hello",
+    salary=100000
+	)
+	Pydantic raises a validation error.
+	
+	
+Example: 
+
+from pydantic import BaseModel, EmailStr, FieldFunction
+from typing import Optional
+
+#BaseModel is not a dictionary. It's a Python class provided by Pydantic that you inherit from to create your own data models.
+
+class Student(BaseModel):
+    name: str
+
+new_student={'name' : 'prashant'}
+#new_student={'name' : 32}  here we can not pass name = 32, while running the code it will give error, because we have already defined name should be string
+
+student = Student(**new_student)
+print(student)
+print(student.name)
+
+
+We can also provide the default value, and optinal variable to the variable of pydantic class,
+
+class Student(BaseModel)
+	name: str = 'prashant' 					//prashant is a default value of str
+	age: Optional[int] = none					// Age is a optional variable and if value not provide than it will be none.
+	email: EmailStr
+	cgpa: float = Field(gt=0, lt=10, default=5)			// in FieldFunction we can use default value, constraints, regular Exp as well.
+	
+new_student = {'age' : '32', 'email' : 'abc@gmail.com'}				//
+
+Note :  Here we have declare age 32 in string format, but still pydantic understand that it is integer and process it like integer only.
+		EmailStr is also a pydantic predefind datatype, where if we pass email value without "@" than it will give error on runtime.
+		
+
+
+----------------------------------------Output Parser
+Using Structured Data that we converted from LLM output data help us to communicate with other system like DB and APIs
+We use Output parser to get the structured output from those LLM which do not give structured output.
+
+Output parser help to convert raw LLM response into structured format like  JSON, CSV, Pydantic Model and more.
+They ensure consistency, validation and ease of use in application. They can be use for both LLMs.
+
+Type
+	String Output parser
+	JSON Output Parser
+	Structured output parser
+	pydantic output parser
+	
+String Output parser : StrOutputParser simplest parser in langchain. It convert LLM response in plain string.
+
+Usecase : Let we have asked LLM to generate research on blackhole, and after getting the response send the response back to LLM and ask
+			LLM to summarize the report in 10-15 lines.
+
+Example: 
+
+from langchain_huggingface import HuggingFaceEndpoint, ChatHuggingFace
+from dotenv import load_dotenv 
+from langchain_core.prompts import PromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+
+
+load_dotenv()
+
+llm= HuggingFaceEndpoint(
+repo_id='meta-llama/Llama-3.1-8B-Instruct'
+)
+
+model=ChatHuggingFace(llm=llm)
+
+# 1st Prompt -> detailed report
+template1 = PromptTemplate(
+    template="write a detailed report on {topic}",
+    input_variables=['topic']
+
+)
+
+# 2nd Promp -> summerize report
+
+template2 = PromptTemplate(
+    template="write a 5 line summary on following report on {text}",
+    input_variables=['text']
+
+)
+
+prompt1 = template1.invoke({'topic' : 'black hole'})
+result1 = model.invoke(prompt1)
+#print(result1.content)
+
+prompt2 = template2.invoke({'text':result1.content})
+result2 = model.invoke(prompt2)
+
+# Here parser extract the main string output from the LLM response
+
+parser = StrOutputParser()
+
+chain = template1 | model | parser | template2 | model | parser
+
+result=chain.invoke({'topic': 'blackhole'})
+
+#print(result2.content)
+print(result)
+
+
+------------------------------JSON Output Parser
+This parser force LLM to give the response in JSON format only.
+
+Example: 
+from langchain_huggingface import HuggingFaceEndpoint, ChatHuggingFace
+from dotenv import load_dotenv 
+from langchain_core.prompts import PromptTemplate
+from langchain_core.output_parsers import JsonOutputParser
+
+
+load_dotenv()
+
+llm= HuggingFaceEndpoint(
+repo_id='meta-llama/Llama-3.1-8B-Instruct'
+)
+
+parser = JsonOutputParser()
+template = PromptTemplate(
+    template="Give me the name age and city of fictional person {format_instruction}",
+    input_variables=[],
+    partial_variables={'format_instruction': parser.get_format_instructions()} #this line will give the Return JSON Object.
+)
+
+prompt = template.format()
+
+model = ChatHuggingFace(llm=llm)
+result = model.invoke(prompt)       
+#print(prompt)
+print(result) #The Output is in JSON Format.
+print(result.content)
+
+OR 
+
+"""
+chain = template | model | parser 
+result=chain.invoke()
+print(result)
+
+"""
+
+
+---------------------------Structured output parser
+Structured output parser is a output parser in langchain that helps extract structured JSON data from LLM response based on 
+predefined field schema.
+
+it works by defining a list of field (Response Schema) that the model should return, ensuring  the output follows a structured format.
+
+We tell the schema that you should return the response in given schema format only that a developer decides.
+
+and the output format will be like :
+
+	{
+		'fact_1' : 'Black hole are formed  when massive stars collapes under thier own gravity'
+		'fact_2' : 'Something something'
+		'fact_3' : 'something something'
+	}
+
+Example:
+from langchain_huggingface import ChatHuggingFace, HuggingFaceEndpoint
+from dotenv import load_dotenv
+from langchain_core.prompts import PromptTemplate
+from langchain_core.output_parsers import JsonOutputParser
+from langchain_core.output_parsers import StructuredOutputParser, ResponseSchema
+
+load_dotenv()
+
+
+llm= HuggingFaceEndpoint(
+repo_id='meta-llama/Llama-3.1-8B-Instruct'
+)
+
+model = ChatHuggingFace(llm=llm)
+
+schema = [
+
+    ResponseSchema(name= 'fact_1', description='Fact 1 about the topic'),
+    ResponseSchema(name= 'fact_2', description='Fact 2 about the topic'),
+    ResponseSchema(name= 'fact_3', description='Fact 3 about the topic')
+            
+]
+
+parser = StructuredOutputParser.from_response_schemas(schema)
+
+template = PromptTemplate(
+
+    template= 'give 3 facts about the {topic} and \n {format_instruction}',
+    input_variables=['topic'],
+    partial_variables={'format_instruction': parser.get_format_instructions()}
+) 
+
+prompt = template.invoke({'topic':'black hole'})
+result = model.invoke(prompt)
+final_result = parser.parse(result.content)
+print(final_result)
+
+
+Note : we can not do the data validation on StructuredOutputParser
+
+------------------------------	pydantic output parser
+it is a structured output parser in langchain that uses pydantic models to enforce schema validation when processing LLMs.
+
+Here when we are creating the schema, we sends a pydantic object in schema, since it is a pydantic object we can do the validations as well of data.
+
+
+Example: 
+
+from langchain_huggingface import ChatHuggingFace, HuggingFaceEndpoint
+from dotenv import load_dotenv
+from langchain_core.output_parsers import PydanticOutputParser
+from langchain_core.prompts import PromptTemplate
+from pydantic import BaseModel, Field
+
+load_dotenv()
+
+llm = HuggingFaceEndpoint(
+
+    repo_id='meta-llama/Llama-3.1-8B-Instruct',
+    task='text-generation'
+)
+
+model=ChatHuggingFace(llm=llm)
+
+class Person(BaseModel):
+
+    name: str = Field(description='Name of the person')
+    age: int = Field(gt=18, description='age of the person')
+    city: str = Field(description='name of the city  the person belongs to')
+
+
+parser = PydanticOutputParser(pydantic_object=Person)
+
+template = PromptTemplate(
+
+    template='Generate the name, age and city of a fictional {place} person \n {format_instruction}',
+    input_variables=['place'],
+    partial_variables={'format_instruction' : parser.get_format_instructions()}
+    
+)
+
+prompt = template.invoke({'place':'indian'})
+print(prompt)
+
+result = model.invoke(prompt)
+final_result = parser.parse(result.content)
+print(final_result)
+
+
+Note: We can see the print(prompt), what actually we are sending to LLM through pydantic parser.
+
+
+---------------------------------------------Chains
+Chains are the pipe line or sequence of steps where the output of one step become the input to the next step automatically.
+Like while creating LLM based applications, We need to perform multiple steps
+	
+		Input -> Prompt -> LLM -> Output Parser -> Final Output
+		
+If we are going to manage these steps by our own logic than it will be the big code and can increase the possibility of errors, But Using 
+Chains of lanchain framwork, we can get it done in one line code.
+	
+
+Example: simple_chain.py  | Sequential chains
+
+from langchain_huggingface import ChatHuggingFace, HuggingFaceEndpoint
+from dotenv import load_dotenv
+from langchain_core.prompts import PromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+load_dotenv()
+
+prompt=PromptTemplate(
+
+    template='Generate 5 interesting facts about {topic}',
+    input_variables=['topic']
+)
+llm = HuggingFaceEndpoint(
+    repo_id='meta-llama/Llama-3.1-8B-Instruct',
+    task='text-generation'
+)
+
+model=ChatHuggingFace(llm=llm)
+
+parser = StrOutputParser()
+
+#Note : We have Three objects Prompt, Model, and Parser Now we are going to use all three objects in one chain as a pipeline, 
+        #For the input of the chain we will give the input of first object only.
+
+chain = prompt | model | parser
+
+result = chain.invoke({'topic': 'cricket'})
+print(result)
+
+chain.get_graph().print_ascii()
+
+
+------------Calling LLM twice 
+
+	
+	Topic -> LLM -> Response -> LLM -> Summary
+	
+Exmaple: call_LLM_twice.py
+
+
+from langchain_huggingface import ChatHuggingFace, HuggingFaceEndpoint
+from dotenv import load_dotenv
+from langchain_core.prompts import PromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+
+load_dotenv()
+
+llm = HuggingFaceEndpoint(
+    repo_id='meta-llama/Llama-3.1-8B-Instruct',
+    task='text-generation'
+)
+
+model=ChatHuggingFace(llm=llm)
+
+prompt1=PromptTemplate(
+
+     template='Generate a Detailed Report on {topic}',
+     input_variables=['topic']
+)
+
+prompt2=PromptTemplate(
+
+    template='Generate a 5 pointer summary from the following {text}',
+    input_variables=['text']
+)
+
+parser = StrOutputParser()
+
+chain = prompt1 | model | parser | prompt2 | model | parser 
+
+result = chain.invoke({'topic' : 'Unemplyment in India'})
+
+print(result)
+
+chain.get_graph().print_ascii()
+
+
+----------------------------------------Parallel Chains
+
+Detailed large Document -> 1. Generate Quiz and 2. Generate Notes -> Response to User.
+
+
+Exmaple : parallel_chain.py
+
+from langchain_huggingface import ChatHuggingFace, HuggingFaceEndpoint
+from dotenv import load_dotenv
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.prompts import PromptTemplate
+from langchain_core.runnables import RunnableParallel
+#Note : Using Runnables we can execute mulitple Chains 
+load_dotenv()
+
+llm = HuggingFaceEndpoint(
+    repo_id='meta-llama/Llama-3.1-8B-Instruct',
+    task='text-'
+)
+
+
+
+model1 = ChatHuggingFace(llm=llm)
+
+
+prompt1 = PromptTemplate(
+
+    template = 'Generate Short and sinmple note from the following text {text}',
+    input_variables=['text']
+)
+
+prompt2 = PromptTemplate(
+
+    template='Generate 5 short Question and answer from the following text {text}',
+    input_variables=['text']
+)
+
+prompt3 = PromptTemplate(
+
+    template = 'merge the provided notes and quiz into a single document notes -> {notes} and Quiz -> {quiz}',
+    input_variables=['notes','quiz']
+
+)
+
+parser =StrOutputParser()
+
+parallel_chain = RunnableParallel({
+
+    'notes' : prompt1 | model1 | parser,
+    'quiz' : prompt2 | model1 | parser
+})
+
+merge_chain = prompt3 | model1 | parser
+
+chain = parallel_chain | merge_chain
+
+text = """India is a diverse country with many different cultures.
+It has a rich history spanning thousands of years.
+New Delhi is the capital city of India.
+Mumbai is one of the major financial centers.
+Bengaluru is known as a leading technology hub.
+India has many beautiful mountains, rivers, and forests.
+The Himalayas are located in the northern part of the country.
+The Ganges is one of India's most important rivers.
+Indian food is famous for its variety of flavors and spices.
+Millions of tourists visit India every year.
+"""
+
+result = chain.invoke({'text' : text})
+print(result)
+
+chain.get_graph().print_ascii()
+
+
+  +---------------------------+              
+              | Parallel<notes,quiz>Input |              
+              +---------------------------+              
+                  ***               ***                  
+               ***                     ***               
+             **                           **             
++----------------+                    +----------------+ 
+| PromptTemplate |                    | PromptTemplate | 
++----------------+                    +----------------+ 
+          *                                   *          
+          *                                   *          
+          *                                   *          
++-----------------+                  +-----------------+ 
+| ChatHuggingFace |                  | ChatHuggingFace | 
++-----------------+                  +-----------------+ 
+          *                                   *          
+          *                                   *          
+          *                                   *          
++-----------------+                  +-----------------+ 
+| StrOutputParser |                  | StrOutputParser | 
++-----------------+                  +-----------------+ 
+                  ***               ***                  
+                     ***         ***                     
+                        **     **                        
+             +----------------------------+              
+             | Parallel<notes,quiz>Output |              
+             +----------------------------+              
+                            *                            
+                            *                            
+                            *                            
+                   +----------------+                    
+                   | PromptTemplate |                    
+                   +----------------+                    
+                            *                            
+                            *                            
+                            *                            
+                  +-----------------+                    
+                  | ChatHuggingFace |                    
+                  +-----------------+                    
+                            *                            
+                            *                            
+                            *                            
+                  +-----------------+                    
+                  | StrOutputParser |                    
+                  +-----------------+                    
+                            *                            
+                            *                            
+                            *                            
+                +-----------------------+                
+                | StrOutputParserOutput |                
+                +-----------------------+            
+				
+				
+				
+-----------------------------Conditional Chains.
+User will give some feedback, we analyse the Feedback(+ve or -ve), 
+and we will generate the response as per feedback emotion.
+
+
+
+from langchain_huggingface import ChatHuggingFace, HuggingFaceEndpoint
+from dotenv import load_dotenv
+from langchain_core.prompts import PromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.runnables import RunnableParallel
+from langchain_core.output_parsers import PydanticOutputParser
+from pydantic import BaseModel,Field
+from typing import Literal
+
+import os
+
+load_dotenv()
+
+print("API Token :",os.getenv("HF_TOKEN"))
+
+llm = HuggingFaceEndpoint(
+    repo_id="meta-llama/Llama-3.1-8B-Instruct",
+    task="text-generation"
+)
+
+model = ChatHuggingFace(llm=llm)
+
+parser = StrOutputParser()
+
+class Feedback(BaseModel):
+    sentiment: Literal['positive', 'negative'] = Field(description='Give the sentiment of feedback')
+
+
+parser2 = PydanticOutputParser(pydantic_object=Feedback)
+
+prompt1 = PromptTemplate(
+
+    template = "classify the sentimentvof the following feedback text into positive or negetive {feedback} and {format_instruction}",
+    input_variables=['feedback'],
+    partial_variables={'format_instruction' : parser2.get_format_instructions()}
+)
+
+classifier_chain = prompt1 | model | parser
+new_chain_classifier = prompt1 | model | parser2
+
+result1 = classifier_chain.invoke({'feedback' : 'This is the terrible Smartphone'})
+result2 = new_chain_classifier.invoke({'feedback' : 'this is the wonderfull smartphone'}).sentiment
+print(result1)
+
+print(result2)
+
+"""
+We dont have control on the output of LLm, so we have to structure the output. So managing the output using pydantic object
+Output :
+
+I would classify the sentiment of the feedback text as "Negative".
+
+The word "terrible" is a strong negative word that indicates the speaker is expressing a strong dislike or disapproval of the smartphone.
+"""
+
+prompt2 = PromptTemplate(
+
+    template= 'write a appropriate response to this  positive feedback {feedback}',
+    input_variables=['feedback']
+)
+
+prompt3 = PromptTemplate(
+
+    template= 'write a appropriate response to this  positive feedback {feedback}',
+    input_variables=['feedback']
+)
+branch_chain = RunnableBranch(
+    ( lambda x:x.sentiment == 'positive', prompt2 | model | parser),             #Here we send tuple First is Condition and second which chain we want to execute if condition gets true.
+    ( lambda x:x.sentiment == 'negetive', prompt3 | model | parser2),
+    RunnableLambda(lambda x: "could not find any sentiment")
+)
+
+
+
+
+
+
+
+
+-----------------------------------------Runnables
+
+
+Chain = multiple Runnables ko ek sequence mein jod dena.
+For exmaple :
+	
+	chain = Prompt | Model | parser 			(so here Prompt, model, and parser are the runnables)
+	
+When we combine the multiple components that perform independent task to form chain, after combining the multiple runnable like above 
+we can see a process or work is completed.
+
+Restaurent have a process
+			|-> Customer Order
+					|-> Waiter will take order
+								|-> Chef Prepare the cousine
+											|-> Waiter will get the cousine on the table
+								
+So here each component playing its own important role, and combining their roles we can find a process. And output of the one become input to other automatically.
+
+Langchain Team initially build lots of functions like for splitting text, loading docs parsing etc. but all the functions was not standardised.
+And when the library become very heavy, and become very hard to understand, so they tried to combine them but it was not possible because those functions was not
+standardised.
+the langchain build the runnables.
+
+Why Runnables 
+Runnables are the interfaces, so they implements the same parent class and all the runnables have the same methods like
+| Method       | Simple meaning                |
+| ------------ | ----------------------------- |
+| `.invoke()`  | Run **one** input             |
+| `.batch()`   | Run **multiple** inputs       |
+| `.stream()`  | Get output **piece by piece** |
+| `.ainvoke()` | Async version of `invoke()`   |
+| `.abatch()`  | Async version of `batch()`    |
+| `.astream()` | Async version of `stream()`   |
+
+
+langchain team finds when thier is any repetition in the task, they form its chain.
+below are the most using chains.
+
+	
+
+What runnables : Runnable is the independent function that can perform a task independently, and can receive an input and 
+				 produce an output using a standard interface, that is why they have similar methods.
+				 
+				 We can connect these runnables using " | "
+				 A workflow that created using multiple runnables is also a runnable, so this tell us we can create complex workflow easily by just using runnables.
+
+
+How ?? : We will see how the runnables were formed
+
+Create One Dummy LLM Class
+
+import random
+
+Class NakliLLM:
+	def __init__(self):
+		print("LLM Created")
+		
+	def predict(self, prompt):
+		
+		response_list = [
+			'Delhi is the capitaal of india',
+			'IPL is a Cricket league',
+			'AI Stands for Artificial Intelligence'
+		]
+	
+		return  {'response ': random.choice(response_list)}
+
+llm = NakliLLM()											 //By calling this constructor, one LLM objcet will get created
+result.predict('What is the capital of india')				//Fetching the response from LLM predict function.
+
+class NakliPromptTemplate:
+	
+	def __init__(self,  template, input_variables):
+		self.template = template
+		self.input_variables = input_variables
+		
+	def format(self, input_dict)
+		return self.template.format(**input_dict)
+		
+template = NakliPromptTemplate(								// Calling the NakliPromptTemplate Class and passing inputs
+	template = 'write a poem about {topic}',
+	input_variables=['topic']
+)
+
+template.format({'topic' : 'india'})						//Calling the Format function of NakliPromptTemplate
+
+llm =NakliLLM()
+llm.predict(prompt)
+
+
+class NakliLLMChain:										//This is how the chain were formed
+	
+	def __init__(self, llm, prompt):
+		self.llm = llm
+		slef.prompt = prompt
+		
+	def run(self, input_dict)
+		
+		final_prompt = self.prompt.format(input_dict)
+		result = self.llm.predict(final_predict)
+		
+		return result['response']
+		
+
+chain = NakliLLMChain(llm, template)
+chain.run({'length' : 'short', 'topic' : 'india'})
+
+
+How all the classes were standerdised?
+	
+from abc import ABC, abstractmethod
+	
+	@abstractmethod
+	class Runnable(ABC)
+		def invoke(input_data):
+			pass
+			
+
+Now NakliLLM class will implement the Runnable and all the runnables will implement Runnables.
+We must need to create all the methods where we are implementing the Runnable interface.
+
+Class NakliLLM(Runnable):
+	def __init__(self):
+		print("LLM Created")
+		
+	def predict(self, prompt):
+		
+		response_list = [
+			'Delhi is the capitaal of india',
+			'IPL is a Cricket league',
+			'AI Stands for Artificial Intelligence'
+		]
+	
+		return  {'response ': random.choice(response_list)}
+
+
+	def invoke(self, prompt)
+		
+		response_list = [
+			'Delhi is the capitaal of india',
+			'IPL is a Cricket league',
+			'AI Stands for Artificial Intelligence'
+		]
+	
+		return  {'response ': random.choice(response_list)}
+
+Note : We have to write invoke method with predict method of in all the Runnables. We cant remove predict method immediately, because some 
+		AI application must be using the predict methods.
+		
+Similarly for NakliPromptTemplate
+
+		
+	class NakliPromptTemplate(Runnable):
+	
+	def __init__(self,  template, input_variables):
+		self.template = template
+		self.input_variables = input_variables
+		
+	def format(self, input_dict)
+		return self.template.format(**input_dict)
+		
+	
+	def invoke(self, input_dict)
+		return self.template.format(**input_dict)
+		
+		
+Now we are creating a class called Runnable Connector that connects the Runnables.
+
+	class RunnableConnector(Runnable):
+		
+		def __init__(self, runnable_list)
+			self.runnable_list = runnable_list
+			
+		def invoke(self, input_data):
+			
+			for runnable  in self.runnable_list:
+				runnable.invoke(input_data)
+			
+			return input_data
+		
+		
+	chain = RunnableConnector([prompt, llm])
+	chain.invoke({'topic' : 'india'})
+	
+
+------------------------------------------------------Runnable part 2
+
+Runnable Types
+	Task Specific Runnable: Core langchain components that have been converted into Runnable so they can be used in pipelines
+							Perform task specific operation like prompting retrieval  etc.
+				Example: ChatOpenAI, PromptTemplate, Retriever
+				
+	Runnable primitive : Those Runnables that are use to connect the Task specific runnables
+						 These are fundamental building blocks for structuring execution logic in AI workflow
+						 They help to orchestrate execution by defining how different runnable interacts.
+				Example: RunnableSequence( | ), RunnableParallel, RunnableMap, RunnableBranch, RunnableLambda, RunnablePassThrough
+
+Note : in the Runnable part 1, we created RunnableConnector Class that class is actually a RunnablePrimitive.
+
+
+RunnableSequence( | ) : it is a sequential chain of runnables in langchain that executes each step one after another. passing through the output of one step as input to the next.
+RunnableSequence.py		it is useful when you need to compose multiple runnable together in a structured workflow.
+					
+
+
+
+RunnableParallel : it allows multiple runnables to execute in parallel. each Runnable receive the same input and process immediately, producing the dictionary of outputs.
+RunnableParallel.py				
+					The execution of both thread to LLM1 and LLM2 were execute parallel
+						|-----> LLM1 ----> output1-----|
+					Topic 							Dictionary-----------> output
+						|-----> LLM2 ----> output2-----|
+						
+					
+RunnablePassThrough: it is a special Runnable primitive that simply return the input as output without modifying it.	
+
+
+Generate a Joke on topic
+												|----->RunnablePassThrough-------------|
+Prompt1 -> LLM -> parser ----RunnableParallel---|									   |---------->
+												|----->Prompt2 -> LLM --> Parser  -----|
+												
+Note : If we directly give :  Prompt-->  -> LLM  -> parser -> runnable sequence -> output , than we will only get explanation of Joke not the Joke.
+		So to get the Joke as we did above bkchodi
+		
+		
+
+
+RunnableLambda : it is primitive runnable that allows you to convert python function into runnable, so that the python function can			
+					connect with existing runnable to form chain.
+					it help us to create Custom Runnables, so that we can easily connect our existing runnable to form chain.
+					
+	Use case :  Let consider the above example where we were taking the explanation of Joke, but now we have to fetch total number of words in explanation		
+				than we have to create a seperate python function that can count the number of words in paragraph and convert it into Runnable.
+				
+				
+												|-----> Passthrough-----------------------------|
+				Prompt ---> LLM ---> Parser ----| 												|------->Output
+												|---Joke -->  Runnable Lambda (Count Words) ----| 
+												
+
+RunnableBranch : It is used to form conditional Chains . like IF/ELSE Statement
+				 Here we send tuple as parameter, number of condition = number tuple parameter.
+				 Each tuple will be a condition, and at last we have default condition.
+				 
+	Usecase : 	 let we as enterprice received a complain from customer, that how to act on what kind of comment from customer.
+	
+																							   |------> Refund Request
+	Email --> Prompt --> LLM(It will decide it is complain, Refund etc.) --> RunnableBranch ---|----> General Query
+																							   |------> Complain of product.
+																							   
+																							 
+								|-----> if report > 700 words
+	Topic --> LLM --> Parse --> |
+								|-----> if report < 200 words 
+								
+								
+LCEL (Langchain Expression Language) ( | )
+
+
+------------------------------------------ Document Loaders.
+
+Retrieval Augmented Generation(RAG) : GenAI have a very big usecase i.e Chatbots like chatgpt, if we ask any question from history most probably it will give 
+										Right answer  because that is trained on past data, but what if we ask question form the domain on which it is not trained??
+										like private documents than most probably it will give wrong answer.
+									
+									So, if We want LLM to provide the answers from our private documents than we need to provide those document to LLM, and than
+										LLM will be able to answer those questions.
+									
+									This techniques of retrieving language generation from private data is known as RAG based applications.
+	
+
+Benefits ??
+use of latest and up-to-date information
+better privacy
+No limit of Document Size.
+
+	
+	
+RAG Based Application will have 4 important components
+1. Document Loaders : DocumentsLoaders are the langchain component used to load data from various sources into a standardised format(Usually as Document Object)
+						that can be further use for chunking, embedding, retrieval, and generation.
+						
+						PDFs--------|
+						Text--------|
+										-------->  Bring the Data into Common Document format -------> Process with langchain
+						DB  --------|
+						S3  --------|
+						
+Document Format 
+		
+		Document (
+			page_content = "",
+			metadata = {"source": "filename.pdf", ......} 
+		)
+					
+
+
+
+There are Lots of Document Loaders in Langchain but we will learn 4 most important Document Loaders
+1. TextLoader: SImplest and commonly used document loader, it reads plain text from (.txt) file and convert it into langchain Document Object.
+	
+from langchain_community.document_loaders import TextLoader
+
+loader = TextLoader('A:\Devops\AI\Langchain\DocumentLoaders.py\python.txt')
+
+docs = loader.load()
+print(type(docs))
+print(len(docs))
+print(docs[0])
+
+print(type(docs[0]))
+#<class 'langchain_core.documents.base.Document'>
+
+print(docs[0].page_content)
+print(docs[0].metadata)
+
+
+2. PyPDFLoader : it is used to load content from PDF files and convert each page into a document object.
+				 It have limitation, it can not process the scanned PDFs.
+				 it works page by page, mean if we have 10 pages in PDF than it will create 10 Document objects.
+				 
+	[
+		Document(page_content = "Text from page 1 ", metadata={"page" : 0, "sources" : "file.pdf"})
+		Document(page_content = "Text from page 2 ", metadata={"page" : 2, "sources" : "file.pdf"})
+		Document(page_content = "Text from page 3 ", metadata={"page" : 3, "sources" : "file.pdf"})
+	]
+	
+Example: 
+
+from langchain_community.document_loaders import PyPDFLoader
+
+loader = PyPDFLoader('xyz.pdf')
+
+docs = loader.load()
+
+print(docs)
+print(len(docs))
+print(docs[0].page_content)
+print(docs[0].metadata)
+
+
+
+Other PDF Loaders
+	PDF WIth Table Column : PDFPlumberLoader
+	Scanned Image PDF : UnstructuredPDFLoader or AmazonTextractPDFLoader
+	
+	
+3. DirectoryLoader : it let you load multiple documents within a directory.
+
+	"**/*.txt"		: Load All the .txt file
+	"*.pdf"			: Load All .pdf files.
+	"**/*.csv"			: Load All .csv file in the data/ directory.
+	"**/*"			: Load all the file of all types
+	
+	Load vs lazy_load() : load function load everything at once, where lazy_load function loads on demand so that it can not occupy all RAM space.
+							load returns list of document where lazy_load return a generator of documents
+	
+example:
+
+from langchain_community.document_loaders import DirectoryLoader, PyPDFLoader
+
+loader = DirectoryLoader(
+
+    path = 'A:\Devops\AI\Langchain',
+    glob = '*.pdf'                      #It will load all the files which satisfy the pattern.
+    loader_cls=PyPDFLoader
+)
+
+docs = loader.load()
+
+
+print(len(docs))
+
+print(docs[0].page_content)
+print(docs[0].metadata)
+for document in docs:
+    print(docs[0].metadata)
+
+#lazy_load()
+doc_lazy_load =loader.lazy_load()
+for document in doc_lazy_load:
+    print(doc_lazy_load[0].metadata)
+
+
+
+4. WebBasedLoader : it is used to load and extract text from web pages, 
+					it uses beautifulsoup under the hood to parse HTML and extract visible text.
+					
+Example: 	We will load the web url and ask any question on the text from web page.		
+			
+from langchain_huggingface import HuggingFaceEndpoint, ChatHuggingFace
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.prompts import PromptTemplate
+from dotenv import load_dotenv
+from langchain_community.document_loaders import WebBaseLoader
+
+load_dotenv()
+
+llm = HuggingFaceEndpoint(
+
+    repo_id='meta-llama/Llama-3.1-8B-Instruct',
+    task='text-generation'
+)
+
+model = ChatHuggingFace(llm=llm)
+
+prompt = PromptTemplate(
+
+    template='answer the following question from {question} from the following {text}',
+    input_variables=['question' , 'text']
+)
+
+parser=StrOutputParser()
+
+
+url = 'https://www.w3schools.com/python/python_modules.asp'
+
+#Note : We can load multiple webpages as well by just passing the urls in List 
+loader = WebBaseLoader(url)
+docs = loader.load()
+
+#print(docs[0].page_content)
+#print(len(docs))
+
+chain = prompt | model | parser
+
+print(chain.invoke({'question': 'what is the Summary of this webpage in 5 lines', 'text': docs[0].page_content}))
+
+
+
+5. CSV Loader : If we want to have question on Csv file than we can use CSV Loader.
+				it create document object for each row of csv file.
+				
+
+from langchain_community.document_loaders import CSVLoader
+
+loader = CSVLoader(file_path= 'Social_Network_adds.csv')
+
+data = loader.load()
+
+print(data[0].page_content)
+
+
+----------------------------------------Text Splitter
+
+Text splitting : it is a process of breaking a large text into small small chunks, so that processing on large data can be fast.
+				 And also each LLM have context size, mean the size of text a LLM can receive and process at a time.
+				 It Overcomes the LLM model limitations.
+				 
+				 By text splitting the embedding, sementic search and summarization of any text become better
+				 
+				 While splitting any text into chunk, it does not cares about the grammer, sementic meaning and even word completion as well.
+				 
+1. Length Based  (CharacterTextSplitter): Simple and fast.
+										 it provides the chunks in list format.
+										 
+
+
+Example:
+
+from langchain_text_splitters import CharacterTextSplitter
+from langchain_community.document_loaders import PyPDFLoader
+
+loader = PyPDFLoader("xyz.pdf")
+
+docs = loader.load()
+
+splitter = CharacterTextSplitter(
+
+    chunk_size = 100,
+    chunk_overlap = 0,				//this parameter are the character overlap between two chunks
+    separator=''
+)
+
+#result = splitter.split_text(text)
+result = splitter.split_documents(docs)
+
+print(result[0].page_content)
+
+
+
+Note: Due to chunk_overlap, we can make secure the context meaning of the text due to which chunk1 can easily predict the next chunk.
+		
+		
+2. Text Structured based Splitter (RecursiveCharacterTextSplitting) : It try to make chunks on the basis of 
+
+		\n \n : Represent Paragraph
+		\na   : Represent Line
+		-	  : Words
+		.	  : character
+		
+	This fucntion tries to secure that chunking should not happen in middle of words.
+	if the chunk size is bigger than it will try to secure paragraph than line than word and at last character.
+	
+Example : RecursiveCharacterTextSplitting.py
+
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+
+text = 'The webpage is about Python Modules. A module is a file containing a set of functions that can be used in an application. To create a module, you save the code in a file with the .py extension. You can use a module by importing it and calling the functions or accessing the variables it contains.'
+
+splitter = RecursiveCharacterTextSplitter(
+
+    chunk_size = 100,
+    chunk_overlap = 15,
+
+)
+
+chunks = splitter.split_text(text)
+
+print(len(chunks))
+print(chunks)
+
+
+3. DocumentBased Text Splitter : When we have Text that do not follow the rule of language like hindi and english,
+								 Whose understanding can not be done in simple Text like Programming Code.
+								 
+	Example: 
+	
+from langchain_text_splitters import RecursiveCharacterTextSplitter, Language
+
+text = """
+
+
+"""
+
+splitter = RecursiveCharacterTextSplitter.from_language(
+
+    language= Language.PYTHON,
+    chunk_size= 300,
+    chunk_overlap=0,
+)
+
+chunks = splitter.split_text(text)
+print(len(chunks))
+print(chunks[1])
+
+
+4. sementic meaning based : Let we have text that is talking about 3 different topics in 3 different paragraph, but if we are going to make thier chuks than
+							chunk of topic one it going to merge with chunk of topic two. Due to which the whole meaning is not be clear.
+							So this sementic meaning text splitter is going to split the text on the basis of meaning of text.
+							
+from langchain_text_splitters import SemanticChunker
+from langchain_openai.embeddings import OpenAIEmbeddings
+
+from dotenv import load_dotenv
+
+load_dotenv()
+
+text_splitter = SemanticChunker(
+	
+	OpenAIEmbeddings(), breakpoint_threshold_type = "standard_deviation",
+	breakpoint_threshold_amount=1
+)	
+
+sample = """  the Whole Text """
+
+docs = text_splitter.create_documents([simple])
+print(len(docs))
+
+print(docs)
+
+
+
+-----------------------------------------------Vector Store.( UNder Text Splitters on VS)
+Vector store is required to store the Vector number of token, it is used to make a semantic search.
+In SQL Database we can only make search where keywords matches with required value, but using Vector DB we can make semantic search
+in which we fetches the meaning given string.
+
+
+CRUD Operation can also make on the stored vector.
+
+The embedding model decides the vector dimension.
+
+384 dimensions
+768 dimensions
+1024 dimensions
+1536 dimensions
+3072 dimensions
+
+FOr making search in vector store,it have to match query vector with stored vector one by one which is lot of time taking. So we use indexing.
+
+We will create cluster of vectors let we have 10 cluster of 1 lakh vectors, and each cluster have n vectors. we will find the average of all 
+the cluster which will be the center of all the cluster vectors. than will find the cosine similarity with center cluster vector. 
+and than we will make search in only that cluster with which we have highest cosine similarity. 
+
+
+Vector Store : Storage and Retrieval, they are only liabrary. ex : FAISS, Chroma
+
+Vector DB : ACID Transaction, Concurrency control (multiple user access at same time.), authentication, Backup and Restoration
+			It is full fledged Database system designed to store query vectors.
+			Database like feature.
+			ex : weaviate, Pinecone, Qdrant, Milvus.
+
+Methods in Vector store in langchain are common for different different vector stores.
+
+from_documents(), from_text()
+add_documents(), add_text()
+similarity_search(query)
+
+1. Chroma Vector Store : light weight vector database that is friendly with local development and small scale production need as well.
+
+	Heirarchy
+		
+		User (can create multiple DB)
+		|
+		Database (Under Database user can create multiple collections
+		|
+		Collections (Under the collections we can store multiple documents.)
+		|
+		Document : (it consist of embedding vector and metadata)
+		
+
+-----------------------------------------------Retrievers
+
+Retrievers is the component of langchain that fetches relevant document  from a datasource in response to user query.
+All the retrievers are runnables.
+
+It is not a document  loader, it have some kind intelligence, it is a retriver.
+
+Types of Retrievers ?
+Datasource based Retrievers : From what datasource we are fetching the document
+	
+1. Wikipedia Retrievers : it uses wikipedia API to fetch relevant data matches with query
+2. Vector Store Retrievers
+3. Archive retrievers 
+
+Mechanism based retrievers  : how the search is made
+
+
+Example : 
+
+from langchain_community.retrievers import WikipediaRetriever
+
+retriever = WikipediaRetriever(
+    top_k_results=2,
+    lang="en"
+)
+
+query = "India Pakistan relations"
+
+print("Searching Wikipedia...")
+
+docs = retriever.invoke(query)
+
+print(f"Number of documents returned: {len(docs)}")
+
+for i, doc in enumerate(docs):
+    print(f"\n------- Document {i + 1} -------")
+    print(f"Content:\n{doc.page_content[:1000]}")
+    print(f"\nMetadata:\n{doc.metadata}")
+	
+
+
+Vector Store Retriever.: it fetches the document from a vector store, based on vector sementic similarity.
+
+
+Maximal Marginal Relevance (MMR) : MMR is a information retrieval  algorithm designed to reduce redundency in the retrieved results
+									while maintaing the high relevance to the query. The results are different from eachother
+									
+	Exmaple: FAISS.py
+	
+
+multi query retriever : this tries to remove the ambiguity from the user query , the user may query something that is very ambiguess
+						
+						like Query : How I can stay healty
+							meaning : What Should I eat
+									  HOw often I should Excersize
+									  How I can manage my stress
+							SO MQR generate multiple query from its side
+
+
+
+Contexual Compression retriever : This retriever in langchain is an advanced retriever that improve retrieval quality by compressing document after retrieval.
+									keeping only the relevant content  based on the user query.
+									
+									Result me se faltu ki cheez hata dega.
+									
+										 |--> D1 (Sending D1 with query to LLM --> LLM  --> D1
+					Query -> Retriver ---|
+										 |--> D2 (Sending D1 with query to LLM --> LLM  --> D2
+								
+								
+								
+---------------------------------------RAG Retrieval Augmented Generation
+
+Look at the diagram
+
+
+------------------------------------- Langchain Tools
+
+Tool  ---->   Tool Calling ----------> Agents
+
+Tool : it is just a python function or API, that is packaged in a way the LLM can understand and call when needed
+		
+		As we know, LLM can think and can generate but it cant perform the task, so we packaged the LLM with Python functions so that it can perform a task.
+		
+		After Combining the Tools with LLM it becomes Agent, because now it can think, generate and perform the task as well.
+		
+			
+		Types : 
+		Build in tools : Langchain provide some of standard tools to integrate.
+		Custom Tools : When We want to integrate LLM with our custom application, we need to build our custom tool
+
+	
+Note : Tools are also Runnables
+
+Below are the builtin Tools available	and many more : https://docs.langchain.com/oss/python/integrations/providers/overview
+		
+| Category       | Tool / Integration          | Typical use                    |
+| -------------- | --------------------------- | ------------------------------ |
+| 🌐 Web Search  | DuckDuckGo                  | Search the internet            |
+| 🌐 Web Search  | Tavily                      | AI-optimized web search        |
+| 🌐 Web Search  | Google Search               | Google web search              |
+| 🌐 Web Search  | Bing Search                 | Bing web search                |
+| 📁 Files       | File management tools       | Read/write/manage files        |
+| 🧮 Math        | Calculator                  | Mathematical calculations      |
+| 🐍 Code        | Python REPL                 | Execute Python code            |
+| 🗄️ Database   | SQL Database                | Query SQL databases            |
+| 🔎 Retrieval   | Retriever tools             | Search vector stores/documents |
+| 🧠 Wikipedia   | Wikipedia                   | Search Wikipedia               |
+| 🐙 GitHub      | GitHub tools                | Search/repos/issues/PRs        |
+| 📧 Email       | Gmail                       | Read/search/send email         |
+| 📅 Calendar    | Google Calendar             | Read/create calendar events    |
+| ☁️ AWS         | AWS integrations            | Interact with AWS services     |
+| 💬 Slack       | Slack tools                 | Search/send Slack messages     |
+| 🗂️ Notion     | Notion tools                | Read/search Notion             |
+| 🧑‍💻 Requests | HTTP/API tools              | Call APIs                      |
+| 🔗 Browser     | Browser/search integrations | Retrieve web information       |
+
+
+There are three ways to create custom tools
+-> @tool anotation
+-> Using StructuredTool & Pydantic : special tool where  the input to the tool follows a structured schema, typically defined using pydantic model
+-> Using Base tool Class : basetool class is the abstract base class for all tools in langchain, it define the tool structure and interface 
+							that any tool must follow. ALl the tools types like @tool or StructuredTool are built on the top of it.
+
+
+
+
+-------------------------------------------------------Tool Calling
+
+Tool binding : Step in which we register the Tool with LLM Model, so that LLM knows what tool are available, it knows what each tool does (description),
+				and it know what input format to use(Schema)
+				
+Note : Not all the LLM have capability to bind the Tools.
+		The LLM calls the tool only when it is required, not every time it is going to call the Tool.
+
+

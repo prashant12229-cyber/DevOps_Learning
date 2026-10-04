@@ -1,0 +1,1029 @@
+Docker: Docker is a open source platform or tool that allow you to pack an application and everything it needs (code, runtime, libraries, OS dependencies) 
+		into a single unit called a container.
+		Further we can create an image of that specific application container and create container using that image at any platform.
+		
+Docker Image = Read-only blueprint
+			   Contains app + dependencies
+			   Built using Dockerfile
+			  
+Docker Container: Running instance of an image
+
+Docker Engine : create image and containers.
+
+Dockerfile : Instructions to build image ( docker build -t myapp .)
+
+
+Container: it is a new concept of virtualization, where we create VM using light weight image of OS, and we can bind the application into standardized unit.
+			But container does not have its own kernel, it use the kernel of host machine OS.
+			
+Kernel :  A middle layer that interact with both software and hardware. like
+		  App asks for memory → kernel allocates RAM
+		  App reads a file → kernel talks to disk
+		  App sends data → kernel handles networking
+		  
+		  Application   ---------> (system call) ---------> Kernel
+		  
+		  Hardware		---------> (driver / interrupt) -----------> Kernel
+
+		  
+		  The kernel communicates with hardware using: Device drivers, Hardware controllers(keyboard inputs, disk read write)
+
+Note :    We can create the container of Windows OS as well, but it can run only on Windows hosts, because it uses the Windows Kernel.
+
+
+
+Complete Flow
+						Application (Software)
+								↓
+						System Call
+								↓
+							Kernel
+								↓
+						Device Driver
+								↓
+							Hardware
+
+Containers communicate directly with the host operating system's kernel. And It Help us to use Hardware in more efficient manner.
+
+1. Portable : share across the system without OS dependencies
+
+2. Lightweight : it uses the OS images which is lightweight, size is very low
+   as compared to actual OS
+3. Container has its own environment independent of container host machine,
+   it may happen container have different version of java installed and
+   base machine have different version of java.
+
+Docker : it is an executable file that has instruction to build containers using the images, where images are the read only templates.
+		 Docker images and docker container has similar kind of relation that we have between class and object. 
+		 
+		 docker images is a blueprint to create container.
+		 docker container is a running instance while docker image, and image is read only templates.
+
+
+-------------------------------------------------
+		 
+How to install and start docker container : It is required to start docker desktop to start the docker engine
+
+yum install docker -y            (install docker package in linux image)
+systemctl start docker           (start docker service)
+systemctl enable docker			(enable Docker0
+systemctl stop docker           (stop docker service)
+
+
+wsl --shutdown docker-desktop		// Command will stop the Docker desktop and Docker Daemon, if we directly close the docker desktop than  desktop will close but not daemon
+docker container --help          (will get all the docker options)
+docker info						 (all the  running Docker Info) 	
+docker --version
+
+To Install Docker Desktop, Open Power Shell and move to path : C:\Program Files\Docker\Docker>Docker Desktop Installer.exe and Run
+This will start installing Docker Desktop
+
+
+Note : New docker desktop version have artifactory integration, that is use to store docker images, tar, pm package, zipped etc
+---------------------------------------- Docker One Shot
+
+Docker : Docker is an open-source platform that automates the deployment, scaling, and management of applications by using containerization.
+
+Basic container operation commands of docker
+
+Note : Each image that we pull from docker hub has some tag defined,
+		it may be version or something else
+
+docker pull image_name 			 (We can pull any image using this command, image name we can get from docker hub)
+
+
+
+docker container ls              (List only running container)
+
+docker container ls -a           (List all the container)
+PS C:\Program Files\Docker\Docker> docker container ls -a
+CONTAINER ID   IMAGE          COMMAND              CREATED          STATUS                     PORTS                                     NAMES
+05315face69b   e19cdd61f519   "httpd-foreground"   8 seconds ago    Up 7 seconds               0.0.0.0:9999->80/tcp, [::]:9999->80/tcp   My_HTTPD
+2260f6e5b31f   httpd:trixie   "httpd-foreground"   8 minutes ago    Up 7 minutes               0.0.0.0:8080->80/tcp, [::]:8080->80/tcp   my_httpd
+
+docker ps -a                     (List all the stopped container)
+docker ps                        (List all the running container)
+
+docker image ls                  (list all the docker image)
+PS C:\Program Files\Docker\Docker> docker image ls
+REPOSITORY   TAG       IMAGE ID       CREATED      SIZE
+httpd        latest    e19cdd61f519   3 days ago   175MB
+httpd        trixie    e19cdd61f519   3 days ago   175MB
+
+docker volume ls                 (To list the Volume of docker)
+
+
+docker run -it ubuntu            (Run a container, and docker will get login as well like root@containerID)
+									Docker will check that ubuntu image exist in system, if not then it will get it from web
+	
+docker rmi image_name			    (This remove Image)
+docker rm container_name			(this remove container)
+
+
+docker container commit container_ID new_image			(It creates a new Docker image from the current state of an existing container.
+														Think of it as taking a snapshot of a container and saving it as a reusable image.)
+															
+Note : If any of the container is running using image, we can't delete that image until we have running container on that image.
+
+
+Note : we can install docker desktop application to manage the container services. go to : https://www.docker.com and download docker desktop application
+	   we can open docker desktop on : http://127.0.0.1:2375
+		
+
+Note : We can pull any image from docker hub using pull command, or the command also mentioned on docker hub.
+Example: docker pull httpd:trixie
+
+--------------------------------------------------------- Image Imported in Docker local System
+PS C:\Program Files\Docker\Docker> docker image ls
+REPOSITORY   TAG       IMAGE ID       CREATED      SIZE
+httpd        trixie    e19cdd61f519   3 days ago   175MB
+
+----------------------------------------------------------
+
+
+Note : When we run or create any container using docker image, image have starting point or entry point of container, means what command runs when a container starts.
+		For which we can get error like :	error: docker: Error response from daemon: no command specified
+		
+		So we can start the container by starting the terminal of container like below 
+		The start or entry point of container is mentioned inside the image of container, if not default command than container will fail.
+		docker run -it -p 1010:80 5728ab4e6812 /bin/bash
+
+
+create container using above image 
+Command :	docker run -d --name new_Container_name  -p Local_port:Container_Port  ImageName_:Image_Tag
+			docker run -d --name new_Container_name  -p Local_port:Container_Port  Image_ID
+			
+			docker  run -d --name My_HTTPD -p 8080:80 httpd:trixie
+		
+Note : In above command -d denote the container will create in detached mode.
+--------------------------------------------------------------				
+
+docker  stop container_ID					(stop container of specific container ID)
+
+docker  start container_ID					(start container of specific container ID)
+
+docker  restart container_ID				(restart container of specific container ID)
+
+docker  rm container_ID					(Delete stop container of specific container ID)	
+
+docker  rm container_ID -f					(force fully remove)
+
+
+docker  rename container_ID new_name		(Rename container, by default docker create container with random name)
+
+docker  run -it ubuntu /bin/bash			(To take cmd control of Container interactive mode, while running the container)
+
+
+----------------------------------------------------------------------------------------------------------
+docker  exec -it container_name /bin/bash	(We can take control of container like this as well)
+
+docker  exec -it container_ID /bin/bash	(We can take control of container like this as well)
+
+PS C:\Program Files\Docker\Docker> docker exec -it 05315face69b /bin/bash
+root@05315face69b:/usr/local/apache2#
+
+
+exit												( this will bring us out of container, but container will get stop)
+
+CTRL+P or CTRL+Q									(come out of container, without stopping the container)
+
+-------------------------------------------------------------------------------------------------------------------
+
+
+Note: We can't remove running container				
+	  We can take container control and its command line in only attached mode only
+	  By default docker create container with random name
+
+exit	(we can come out of container, but the container will stop)		if we dont want to stop container than use CTRL+P or CTRL+Q
+
+
+Note:	IP-address assign to Container from Docker Host machine, container will get the IP of same range and each container
+		created on same docker host will ping each other
+
+
+docker  pause container_ID or container_name		(Pause Container)
+
+docker  unpause container_ID or container_name			(unPause Container)
+
+docker  kill container_ID or container_name		(it will kill the container)
+
+docker  wait container_ID or container_name		(it will wait for container kill)
+
+
+docker  inspect	container_ID								(ip of container)
+
+docker  top container_ID							(to get container inside info)
+
+docker  stats container_ID							(use to display a live stream of resource usage statistics for one or more Docker containers.)
+
+
+Note : Like GIT HUB repository, we have docker hub repository as well,	where we can access multiple public images and push our own image as well.
+		Note : We can pull any image available on docker hub.
+
+Docker Hub: https://www.hub.docker.com
+
+
+How we can copy file on docker container
+
+docker  cp file_name container_ID:/tmp/			(to copy any file into container /tmp directory)
+
+
+How to import and export image of container					
+
+docker  export container_ID or container_name > export.tar			 (we can export the container and share anywhere we want in tar format)
+
+or
+
+docker  export container_ID or container_name -o export.tar		(we can export the container and share anywhere we want in tar format)
+
+docker load  -i image_name.tar			//easiest way
+
+docker image import export.tar import_image						(Importing exported container into another system,  where import_image is the name of image in new docker host)
+
+
+---------------------- Docker Image Layer
+
+Base image : linux, Read Only Layer and Immutable
+Layer 1     : Read Only and Immutable
+Layer 2     : Read Only and Immutable
+Container   : mutable
+
+
+When we pull two same image of different version then newer image will only download container layer, rest layer will be shown by docker like already exist.
+
+Example : 
+
+docker pull ubuntu:20.04
+	Output :
+			20.04: Pulling from library/ubuntu
+			d51af753c3d3: Pull complete
+			fc878cd0a91c: Pull complete
+			6154df8ff988: Pull complete
+			Digest: sha256:xxxx
+			Status: Downloaded newer image for ubuntu:20.04
+			
+docker pull ubuntu:22.04
+	Output :
+			22.04: Pulling from library/ubuntu
+			d51af753c3d3: Already exists
+			fc878cd0a91c: Already exists
+			a0f6f8f2c1ab: Pull complete
+			Digest: sha256:yyyy
+			Status: Downloaded newer image for ubuntu:22.04
+			
+			ubuntu:20.04
+			├─ layer A (base OS)   ← reused
+			├─ layer B (libs)      ← reused
+			└─ layer C (20.04 specific)
+			
+			ubuntu:22.04
+			├─ layer A (base OS)   ← reused
+			├─ layer B (libs)      ← reused
+			└─ layer D (22.04 specific) ← new
+
+
+
+
+--------------------------------------Port Binding
+
+By default we can not access the application running on Container,	so we need to do port mapping with IP address of docker host machine i.e eth0.
+
+Note : when we hit ifconfig, we can see docker0, that has the network address.
+
+docker run -it -p 3600:80 ubuntu /bin/bash		(mean 3600 port of docker host will get mapped with 80 port of container)
+
+Note : When we map the port of docker host machine and container port called port binding. We can not bind one port of docker host with two docker container.
+
+
+
+Troubleshoot command
+
+docker logs containerID
+
+docker exec -it containerID /bin/bash				// taking the control to bash or sh
+
+docker exec -it containerID /bin/sh
+
+
+
+-------------------------------------Docker HUB
+
+HUB : https://hub.docker.com
+
+
+How to pull image from Docker HUB
+
+1. Open docker hub and there we can find various image that we can pull in our docker
+
+ex :	
+
+docker pull mysql			(using this we can download the image in our docker directly)
+
+docker pull httpd			(using this we can download the image in our docker directly)
+
+docker pull rhel/jenkins	(using this we can download the image in our docker directly)
+
+After downloading the image, we can see the image in docker as below
+
+docker image ls				List out all the images of docker
+
+
+Now we can share our image on docker hub as well,  just we need to have our account on docker hub (let my acc ID is pc12229)
+
+How to Push image on docker
+Suppose your username is: pc12229
+Login from your machine
+	Command: docker login
+
+It will ask for:
+	Username: prashant123
+	Password: ********
+
+Login Succeeded
+
+docker image ls
+
+output : 
+	REPOSITORY      TAG       IMAGE ID
+	nginx-demo      latest    a12bc34d56
+
+Tag the Image : dockerhub_username/repository:tag
+				docker tag nginx-demo:latest pc12229/nginx-demo:v1
+				
+Push the image: docker push prashant123/nginx-demo:v1
+
+docker image push pc12229/sqlserver			(it will upload our image on docker hub i.e hub.docker.com	where pc12229 is my account name on hub)
+
+
+
+
+Note : We can also use command : " docker login -u " for login via cmd
+---------------------- Docker Volume
+
+Docker Volume is used to store Container Data.	If accidentally container get deleted then the data must be safe,
+so we store the data on docker host.
+
+Better to use SAN or SAMBA Storage Disk.	AWS S3, Google Cloud Storage, Azure Blob Storage
+
+
+Commands :-
+
+docker volume --help
+|-- create           (Create Volume)
+|-- inspect          (Display Detailed Information on one or more volume)
+|-- ls               (List Volume of Docker)
+|-- prune            (Remove all unused local volume)
+|-- rm               (Remove one or more volume)
+
+
+docker volume ls   								(To list the Volume of docker)
+
+docker  inspect containerID			(We can see all the Container settings, like IP, volume etc.)
+
+docker volume create MYVolume					(Command will create Volume for docker)
+
+
+docker volume inspect MYVolume					(Details of Volume, we will get the mount point of volume on docker host
+												like /var/lib/docker/volume/MYVolume(location of linux docker host), create time, label etc.)
+
+
+docker container run -it -v MYVolume:/tmp/ --name web-server ubuntu /bin/bash		(Creating Container and mounting MYVolume to /tmp at same time)
+
+Note : We cant attach the volume if the container already created.
+
+We can change the mount point of directory of docker host to our own created directory
+	
+	sudo systemctl stop docker
+	Create or edit /etc/docker/daemon.json:
+			{
+				"data-root": "/path/to/my/docker-data"
+			}
+	to 
+			{
+				"data-root": "/mnt/dockerdata"				//our custom directory.
+			}
+	sudo rsync -aP /var/lib/docker/ /mnt/dockerdata			// migrating the exitinfd data
+	sudo systemctl start docker
+
+	
+
+
+
+
+Now if we create any file inside	/var/lib/docker/volume/MYVolume (location of docker host),	we can see the same file inside /tmp (tmp directory of container) or vice versa.
+If we delete the container, then we can still see the volume is not deleted.  And we can use the same volume with another container as well.
+
+
+How to use volume to run index.html from docker host
+Meaning: We will keep index.html at docker host location and mount that location to container /var/www/html directory. 
+
+
+Create image using Dockerfile which will install Apache HTTP server	in container.
+
+
+vim dockerfile
+    FROM: ubuntu:14.04
+    RUN apt-get update -y
+    RUN apt-get install apache2 -y
+
+Now Run to create image using above file
+docker image build -t MYImage .
+
+docker image ls     (see the newly created image)
+
+Now we can mount MYVolume(local volume to container) o
+docker container run -it -v MYVolume:/var/www/html myimage /bin/bash
+
+---------------- How to push your container image privately i.e Docker Registry
+
+docker image pull registry
+
+Create a registry container
+    docker container run -itd -p 5000:5000 --name simple_registry registry
+    yum Install elinks (browser)
+    hit -> elinks on docker host
+    now provide 127.0.0.1:5000/v2/_catalog
+    give tag : docker image tag nginx hub.docker.com/nginx  or
+               docker image tag nginx 127.0.0.1:5000/nginx
+    after hitting above command we can see this in images like
+docker image ls
+    Now Push -> docker image push registry tag(127.0.0.1:5000/nginx)
+
+Note : in above command if we push image on any registry than we are going to get HTTPS error except local IP :127.0.0.1 
+		so need to configure it on HTTPS, but for now we can bypass it as,
+		
+
+create file: vi daemon.json
+    {
+        "insecure-registries" : ["172.16.19.17:5000"]
+    }
+
+than -> cp daemon.json /etc/docker
+
+systemctl restart docker
+
+now push -> docker image push 172.16.19.17:5000/nginx
+
+---------------------Docker File
+Docker file: use to create costum image.
+				A Dockerfile is a text file that contains instructions to build a Docker image.
+
+			Image = blueprint
+			Container = running instance of that image
+
+			we can create any normal file. default name is Dockerfile but if we create file with different name than
+			we need to use -f flag while building image.
+
+
+In Docker file we only give the instruction that we use to install any package or application.
+
+Basic Structure of a Dockerfile
+Instructions : FROM,	 WORKDIR,	COPY,	RUN,	EXPOSE,		CMD/ENTRYPOINT
+
+
+Example: Let’s say you want to run a Node.js app.
+	
+	myapp/
+		|-->Dockerfile
+		|-->package.json
+		|-->app.js
+			
+	FROM node:20-alpine						//base image
+	WORKDIR	/app							//Docker will create a directory in Base image under root i.e /app
+	COPY	. .								// It will copy the entire content of current dir of docker host to Workdir
+	RUN npm install							//Install Dependencies
+	EXPOSE 3000								//Expose the port for application for runtime
+	CMD ["node", "app.js"]					// Starting the app -> node app.js
+
+	Command : docker build -t nodeApplication .			//Command will create image of name nodeApplication in Docker system.
+	
+Note : Each instruction of Dockerfile is considered as layer.
+
+
+Example Dockerfile
+--------------------------------------------------------------------------------
+| FROM ubuntu:14.04                                                     |  // From Keyword, From which base image we are
+| RUN apt-get update && apt-get install -y apache2                      |     creating image.
+| RUN apt-get install -y tree openssh-server openssh-client             |
+| RUN cd /var/www/html                                                  |
+| RUN echo "Welcome to India" > /var/www/html                           |
+| RUN service apache2 start                                             |
+--------------------------------------------------------------------------------
+
+
+Now We can build a new image using the above Dockerfile.
+Command: docker image build -t myimage:1 .          (-t Tag,  () Dot mean file is at current path.
+                                            Docker will automatically find the Dockerfile at given path, only if
+                                            Name is Dockerfile, otherwise we need to give flag -f file_name
+                                            and 1 is verion of image
+											
+											
+
+
+
+-------------------------------Lecture 10
+docker image ls                     (below is the command output)
+
+Repository      TAG       IMAGE ID       CREATED          SIZE
+ubuntu          14.04     vjksdvnsdkj    3Month Ago       200MB
+
+Docker image history vjksdvnsdkj (image_id)
+
+IMAGE           CREATED           CREATED BY         SIZE
+vjksdvnsdkj     3MONTH Ago        /bin/sh            0KB
+
+Note : If we create image using dockerfile and we only mention (FROM ubuntu:14.04), and if we are going to ls the list of
+image
+    docker image ls, than there will be no change in image ID of newly created image and ubuntu 14.04 image.
+    because there is no changes has been made in the new image.
+
+    docker image ls
+    Repository      Tag       IMAGE_ID       CREATED          SIZE
+    ubuntu          14.04     vjksdvnsdkj    3 Month AGO      200 MB
+    New Image       1         vjksdvnsdkj    5 Min  AGO       200 MB
+	
+	
+we make some change in Dockerfile ->
+    FROM ubuntu:14.04
+    RUN touch abc
+
+Now if we build new image using above file than we will get a new image ID
+
+Command: docker image build -t Second_New_Image:1 .
+
+docker image ls
+
+Repository          Tag         IMAGE_ID         CREATED          SIZE
+ubuntu              14.04       vjksdvnsdkj      3 Month AGO      200 MB
+First_New_Image     1           vjksdvnsdkj      15 Min AGO       200 MB
+Second_New_Image    2           abhjdbacisa      5 Min AGO        200 MB
+
+Note : Every time we make change in Dockerfile, we need to rebuild Dockerfile with a new version
+
+Note : Docker works Layer by Layer, means if have 3 line written in Dockerfile than, Docker will create container from Base
+Image
+    and create image from first line, than it will create another container and RUN the second line like
+    "RUN apt-get install -y apache2" and create image from this container and so on.
+    And at last it delete the last created container.
+
+Note : If we use the same command which is already being performed, then docker will not create any container,
+    docker will pick it from cache. means docker keeps images in cache which was create during containerization.
+    docker dont delete it. we can see in the logs of build image.
+
+-------------------------------Lecture 11
+
+Label: LABEL is use to store metadata of Dockerfile, we can define in Dockerfile, so that when new person get the dockerfile
+    can understand the file.
+	
+Define Label in Dockerfile like:
+    LABEL Mobile="7557322132"
+    Mail="prashant1229@gmail.com"
+
+We can see the above labels when we inspect the container created using Dockerfile
+
+Define Env Variable : When we need to call any value again and again, than use ENV.
+    ENV Name=cloudknowledge
+    ENV Pass=Password@123
+
+    to Call Env Variable
+
+    RUN useradd $Name && echo "$Name:$Pass" | chpasswd
+    USER $Name                                      // We will get the Shell of $Name User
+    WORKDIR /var/www/html                           //Default working path
+    COPY    index.html    /var/www/html             //Docker will copy index.html and copy it to
+/var/www/html
+    ADD     myfile.tar    /var/www/html             // docker will extract myfile.tar than copy it to
+/var/www/html
+    ADD https://html5up.net/story/download/html5up-story.zip /var/www/html
+          //This command will download the website zip file and extract it than copy it to /var/www/html
+
+-------------------------------Lecture 12
+
+Note : When we create image using Dockerfile and Create container using that image than we cant ssh from docker host
+machine to the vm created using
+    image, because we have not installed ssh package and not exposed the port 22. And to access outside of docker host
+    we need to do port mapping.
+
+    ssh user@172.17.0.2  // ssh connection to host 172.17.0.2 on port 22 : connection refused.
+	
+
+so we need to install ssh package and configure port 22 as below
+RUN openssh-server \ openssh-client \ zip \ unzip
+RUN mkdir -p /var/run/sshd
+EXPOSE 22
+CMD ["/usr/sbin/sshd","-D"]
+
+Now we can see the details of Container
+
+docker container ls
+
+Container_ID      IMAGE               COMMAND                  CREATED         STATUS          PORTS
+NAMES
+dcbbhsdbcdkj      cloudknowledge:20   "/usr/sbin/sshd" "-D"    5 min Ago       Up 5 Min        22/tcp
+
+If we want to ssh, outside of docker host than we need to integrate Internet gateway with docker host will provide public IP
+to connect with docker host.
+
+    docker container run -itd -p 2222:22 cloudknowledge:21                  (port 2222 of docker host get mapped with 22
+of container)
+we will                                                                now if access docker host on port 2222, than
+                                                                        connect to 22 port of container
+
+Now we can connect to container using below command
+    ssh cloudknowledge@54.112.67.78:2222                                 (54.112.67.78 Public IP)
+
+-------------------------------Lecture 13
+Using the custom path and name of docker file.
+
+    FROM ubuntu:14.4
+    RUN touch abc
+
+Custom path
+command: - docker image build -t devimage:1 .                 // (.) Dot represents path to current directory
+    docker image build -t devimage:1 -f /cloud/Docker.        // Now docker will consider /cloud/Docker as current
+path
+    Or
+    docker image build -t devimage:1 -< /cloud/Docker         // We are using -< to dictate the path.
+
+Custom Name
+Commands: -
+    docker image build -t devimage:1 -f cloudknowledge ./cloudknowledge is the docker file
+    docker image build -t devimage:1 -f /cloud/Docker/cloudknowledge.
+    docker image build -t devimage:1 -< /cloud/Docker/cloudknowledge
+
+-------------------------------Lecture 15
+Docker Compose: it use to deploy the container deployment, manage the resources like provisioning and deprovisioning of
+resources.
+    we create YAML file to user docker compose. (docker-compose.yml is the default name)
+
+    Let suppose we have to create 50 container, so we need to run command for fifty times, which is time taking
+    to manage container, so we use to create docker-compose file which will create all the container and provision
+    resources for containers. and we can use the same YAML file in another node,
+	
+
+Google docker-compose install
+open https://docs.docker.com/compose/install/
+come on : install compose on linux system
+there is a command to install docker-compose
+provide the required permissions,
+
+Now run docker-compose info : we will get the output.
+
+Example:1
+    Let we need to deploy and application, so we need on container for application and another for Database.
+    we are going to do this using both normal and using compose as well.
+
+Normal
+    container 1:
+        docker container run --name db --mysql -e MYSQL_ROOT_PASSWORD=mypassword -d mysql:5.7
+            //-e we are using to set environment variable of container username and password
+            IP of DB Container :172.17.0.2
+
+        docker container run -d -p 8000:80 --name my-wordpress -e WORDPRESS_DB_HOST=172.17.0.2:3306 -e
+        WORDPRESS_DB_USER=root
+            -e WORDPRESS_DB_PASSWORD=mypass
+            //We are providing the IP and port of Database and its user i.e root . And -d running in detach mode
+            and mapping the 8000 port of docker host to 80 port of wordpress container.
+            IP of Word press =172.17.0.3
+
+        install elinks and access wordpress on :172.17.03     (here we have access it wordpres from docker host.)
+		
+		
+install elinks and access wordpress on :172.17.03     (here we have access it wordpres from docker host.)
+
+And if we want to access word press from outside of docker host than we need to access it on public IP.
+172.31.80.45 (Private IP of Docker host) --- 54.86.20.154 (public IP assign form IGW to docker host)
+54.86.20.154:8000     (we have mapped 80 port of container with 8000 port of dockerhost)
+//after hitting above address we can access the word press successfully.
+
+Using Docker-compose (yaml or yml both will work)
+    vi docker-container.yml      // open a file
+
+    version: "3.3"
+    services:                    //section of database Container creation
+        db:                      //Name of container
+            image: mysql:5.7     //Which image container will use to create container
+            volume:
+                - db_data:/var/lib/mysql     //db_data volume mount to /var/lib/mysql of docker host
+            restart: always              //container will restart when ever any issue occurs
+            environment:
+                MYSQL_ROOT_PASSWORD=somewordpress
+                MYSQL_DATABASE=somewordpress
+                MYSQL_USER=somewordpress
+                MYSQL_PASSWORD=somewordpress
+
+        wordpress:
+            depends_on:              //The container wordpress which is going to create will depends on db
+                - db
+            image: wordpress:latest
+            ports:
+                - "8000:80"          // port 8000 of docker host will map with 80 port of wordpress container
+            restart:always
+            environment
+			
+
+        WORDPRESS_DB_HOST: db:3600               //Providing Data base container configuration values.
+        WORDPRESS_DB_PASSWORD: wordpress         //Providing Data base container configuration values.
+        WORDPRESS_DB_USER: wordpress             //Providing Data base container configuration values.
+        WORDPRESS_DB_NAME: wordpress             //Providing Data base container configuration values.
+    volume:
+        db_data: {}
+
+Now, we create container using above yml file
+command : docker-compose up -d
+    : docker container ls
+    docker-compose down                      (command to delete container)
+
+-------------------------------Lecture 16
+
+YAML SYNTAX: we need to check the compatibility matrix between compose file format version and Docker engine release
+version.
+
+    We can use the higher version of Docker engine release and lower version of compose file format.
+    But we cant use the higher version of compose file format and lower version of docker engine release.
+
+YML File:
+
+------------------------------- 
+    version: "3"
+    services:
+        webapp1:
+            image: nginx
+            ports:
+                - "8000:80"          //Port mapping
+
+        webapp2:
+            image: nginx
+            ports:
+                - "9000:80"
+
+Note : When we make any change in only 1 service of yml file than, it will even touch the second service and while running
+the
+    yml file, it will show webapp2 is upto date.
+
+Command:
+    docker-compose scale webapp1=4 webapp2=2          //command will create 4 webapp1 container and 2
+webapp2 container
+                                                  basically we are scaling up the containers
+
+    docker-compose scale webapp1=2 webapp2=1          //webapp1 2 container, and webapp2 1 container
+    docker-compose ps                                 // it will show all the all the deployment done using docker-compose
+    docker-compose stop                               //stop all the deployment done using docker-compose
+    docker-compose start                              //start all the deployment done using docker-compose
+    docker-compose down                               // remove all the deployment done using docker-compose
+    docker-compose restart                            // restart all the deployment done using docker-compose
+    docker-compose --help                             // show all the command of docker-compose
+	docker-compose up --no-start          // only create, it will not start the container created      using docker-
+compose
+
+Note : Docker will not let delete the container which is running, need to stop them first.
+
+If we use the file name docker-compose.yml than it will automatically pick this file, but if we use another name of yml file
+than we need to pass the file name explicitly
+
+    docker-compose up -d                                 (pick the docker-compose.yml automatically)
+    docker-compose -f cloudknowledge.yml up -d           (we need to pass the file name using lag -f)
+    docker-compose -f cloudknowledge.yml down
+
+Note : we can also write this yml file in JSON, so we directly use yml to json file converter on google.
+
+-------------------------------Lecture 18
+
+Docker Network: when we install Docker package on any machine, than that machine become docker host and by default one
+    bridge network get created with name of docker0(172.17.0.1), with IP range of 172.17.0.0/16
+
+    Container 1: Ip 172.17.0.2 (Ip 172.17.0.1 will not assign because this ip is for Gateway)
+    Container 2: Ip 172.17.0.3
+
+Note : There is one more network called virtual network between bridge and host, via which both communicate.
+    As we know, we can create multiple container on docker host machine, and host machine has its own ethernet card
+    called eth0, if we direct map eth0 to container than we have other container as well get connect.
+    one way is to reach container 1, map the port of host to container1 with port1,
+    and map the port of host to container2 with port2 and so on.
+
+    We can also create another bridge network, incase the ip of bridge network 1 docker0 get full.
+    or if we want to have different network for different environment like dev test and prod as below
+    172.18.0.0/16  (Dev Env)
+    172.19.0.0/16  (Test Env)
+	172.20.0.0/16     (Prod Env)
+
+We can give our custom range of IP as well like 10.50.0.0/24, 10.100.0.0/24 and 10.200.0.0/24 etc
+
+Note : By default, the container get created in docker0 bridge network. if we want to create any container in specific bridge
+than we need to define it explicitly.
+
+-------------------------------Lecture 19
+Docker network:
+
+command: docker network ls     (show all the network available in docker)
+
+Network_ID          Name          Driver        Scope
+sebhfsdvbsdk        bridge        bridge        local                 (default network of 172.17.0.0/16)
+kjvnsdkjvnksj       host          host          local
+fkbksavkjsnkf       none          none          local
+
+docker network inspect     sebhfsdvbsdk     (after inspecting we can see the same range of 172.17.0.0/16 in subnet as well)
+
+
+
+Note : When we inspect network, we will find container section, which will contain the list of container created under that network
+		when create any container under default network, we can see one more virtual interface will get created (of IPv6) on docker host.
+		
+		
+which will establish the communication between docker host and container. And this network we can see in ifconfig
+command
+    of docker host. this network will exist only till we have running container on docker.
+
+Every time when we create a new container, we can see a new network or interface in ifconfig command of host.
+And when we hit the command (route -n) in any of the container, we can see " Gateway " section , it must be the ip-
+address
+    of first bridge network i.e 172.17.0.1
+
+Now when we create the container, its container_ID is its host name, now if we want our custom hostname than
+    : docker container run -it --hostname cloudknowledge --dns 8.8.8.8 ubuntu:14.04
+
+how to create own network on docker
+    docker network --help
+    docker network create dev-team          //it will create a new network in docker.
+    docker network inspect dev-team         //inspecting specific network, here we can see new network IP
+(172.18.0.0/16)
+                                            For another container (172.19.0.0/16)     and     Gateway IP will be
+common that is docker host ip (172.17.0.0/16)
+    docker network rm dev-team              // Delete network
+
+    docker -network create dev-team --subnet=10.100.0.0/24   // Creation of network with custom range
+    docker container run -it --network=dev-team ubuntu:14.04 //Creation of container under custom IP range or custom
+network
+                                            Now the IP assigned to container from
+10.100.0.0/24
+
+docker container run -it --network=dev-team --ip=10.100.0.100 //Creation of container with custom IP-address
+	
+
+Note : The network of 172.17.0.0/16 will not able to ping 10.100.0.0/24, but Ip range from same network will be able to
+ping
+
+-------------------------------Lecture 20
+How to establish communication between two container from different network.
+
+----------------DEV-TEAM----------------  (172.31.93.47)--------------PROD-TEAM                 
+                10.100.0.0/24     |----------via eth0----------|     10.200.0.0/24
+                                  |                            |          |
+
+                10.100.0.100 (ubuntu)                                 10.200.0.100 (ubuntu)
+
+Here we have two different network on docker host DEV-TEAM and PROD-TEAM, and docker host have its own eth0 of IP
+172.31.93.47
+if any of two network want to come on second network than it have to go via eth0 only
+
+commands:
+    docker network create dev-team --subnet=10.100.0.0/24
+    docker network create prod-team --subnet=10.200.0.0/24
+    docker network ls
+
+    Network_ID          Name          Driver        Scope
+    dhcbdbcdkjcb        dev-team      bridge        local         (10.100.0.0/24)
+    hsbakjcbhcbk        prod-team     bridge        local         (10.200.0.0/24)
+    dhbcsdkjcbkd        common-network bridge       local         (10.99.0.0/24)
+	
+docker network inspect dhcbdbcdkjcb
+docker network inspect hsbakjcbhcbk
+
+docker container run -it --network=dev-team --ip=10.100.0.100 -p 8000:80 ubuntu:14.04
+                    //port 8000 of hoat mapped with port 80 of container dev-team
+
+access dev-team container and install http server, which we access from container of prod-team network
+    apt-get install apache2
+    echo "Welcome to dev-team container" > /var/www/html/index.html
+
+docker container run -it --network=prod-team --ip=10.200.0.100 -p 9000:80 ubuntu:14.04
+
+wget http://172.31.93.47:8000               // Here we are accessing eth0 on port 8000, which route the traffic to
+                                            dev-team container and will download the index.html file on container of prod-
+team
+
+wget http://172.31.93.47:9000               //it will download the index.html from container of prod-team to container of dev-
+team
+
+-------------------------------Lecture 21
+How the container can communicate without port mapping
+
+: we will create one extra common network(10.99.0.0/24), and attach both container from dev-team and prod-team,
+so that both container will get the IP from common network. By connecting both container with common-network they will
+get one extra interface card eth1
+
+DEV-TEAM
+eth0 10.100.0.100
+eth1 10.99.0.2     ---->--->---x---<---<----
+                                    PROD-TEAM
+                                    eth0 10.200.0.100
+                                    eth1 10.99.0.3
+
+attach command :
+    docker network connect dhcbdbcdkjcb hsbakjcbhcbk     //these are the container ID getting attach
+    we need to run this attach command on both containers of dev-team and prod-team. After running this
+attach command we can see in eth1 in both containers.
+
+-------------------------------Lecture 23
+
+Docker Swarm: we can create n number of container on one docker host, but what if the main docker host machine is disrupt
+or
+    stopped working than??
+    So using Docker Swarm We can create cluster of Docker host.
+
+    On clustered machine we need to install docker package, and it is must required that all the clustered machine
+able to
+    ping each other.
+
+    Note : By default Docker swarm is disabled, we need to enable it explicitly. Swarm has its own ingress Load Balancer
+
+    We need to configure one node of docker host as Master node and rest as worker node.
+        If we have to configure 100 containers than we need to distribute them among each node of docker host.
+        if any one docker host get down or destroy than its container will get shift to rest of nodes.
+
+    all the service are going to manage from master node like creation of container on worker node anything.
+    We must have two or more than two manager or master node.
+    Note : we can configure ingress load balancer, so that it can distribute the load to all the container of docker.
+	
+
+-------------------------------Lecture 24
+Docker Swarm Lab : Create four Vm for docker master and worker node.
+
+-install docker on each node
+    yum install docker* -y
+    systemctl start docker
+    systemctl enable docker
+
+    docker swarm init          // initialise swarm, using this command we can see like "current node is now a
+172.31.83.216:2377                  Manager Node" we will get a swarm token and swarm address
+
+    Note : we will get a command from manager node, which we need to run in worker node to add them as worked
+node.
+
+    Command: docker swarm join --token SWMTKN-1-5bcdaihcajcbksalhb 172.31.83.216:2377 //2377 is port for
+Swarm service
+
+    Now we can run the above command on each worked node.
+
+    docker node ls             //will get the node connected in docker, we can run this command from worker
+node.
+
+    Node ID             HOSTNAME              STATUS        Availability        MANAGER Status
+    cnkajcnbkjsac       ip-172-31-83-216      READY         Active              Leader
+
+    docker node inspect cnkajcnbkjsac  //we will get the node info.
+
+    docker node promote Node_ID        // we can promote the node from worker to Manager
+    docker node demote  Node_ID        // command use to make node from manager to worker
+    docker node rm Node_ID             //remove node from cluster
+	
+	docker node rm Node_ID     --force          //forcefully remove, when the node is running.
+docker swarm leave                         // need to run on worker node, after remove command run on
+manager node,
+                                           so container remove from cluster completely
+
+docker node join-token worker              //fetch the token from manager node.
+
+-------------------------------Lecture 25
+We have one manager and 3 worker node, we need to have containers in each node. So create container on docker we use
+service
+
+docker service create --name web_server --replicas 4 nginx     //docker will create 4 container of nginx image.
+docker service ls                                      // list all the service
+
+Service_ID          Name          Mode          Replicas      IMAGE
+dchdiksvsnik        Web-server    replicated    4/4           nginx
+
+docker service ps Service_ID                           //we will get the container info build on Servie ID on which node
+Container_ID        Name          Image         Node                  Desired State         Current State
+zvfsbfbfbxbf        web-server1   nginx-latest  ip-172-31-83-57       Running               Running
+56 Second.
+
+watch docker container ls                              // command will give live status of command output
+
+Note : If we remove any one of the container, we can immediately see in watch command the Replicas as 3/4, so docker need
+required value as 4, so it create another container in very few time and again Value of replica will reach to 4/4.
+
+Note : If any of the node get down, than swarm will shift container that node to another node.
+
+docker service scale Service_ID=12   // Now Swarm will create 12 container
+docker service scale Service_ID=4   // Now Swarm will remove 8 container and keep 4 container
+
+We can create n number of service on docker
+docker service create --name App_server --replicas 4 nginx
+
+Note : If we want to remove containers, but when we remove it create automatically, if we shutdown vm tha it create on
+another
+    vm. so we should not remove docker swarm, we can delete the service
+
+    docker service rm Service_ID
+
+We can do port mapping in service as well. mean if we create 8 container using service than all the container cna mapped with
+same
+port in one command
+    docker service create --name nginx-server -p 8000:80 --replicas 8 nginx
+        // mean 8000 port of each docker host machine i.e eth0 get mapped with port 80. Using this we
+can map
+        n number of container with one service.
+
+    To access we can use : public-IP-of-node:8000

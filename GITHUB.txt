@@ -1,0 +1,122 @@
+GITHUB 
+
+GIT is a open source version controling tool that keeps the track of change in code, where GITHUB is the website that allows to store and manage
+their code using GIT
+
+1. Helps to collaborate so a team can work on single project
+2. Track the complete history of code or project
+
+Note : To finalize any change on GIT HUB is a two steps process, first we need to add the change and than commit the change to finalize changes
+		So GIT Hub keeps the track of every commit done by user on code or project.
+		We need to provide a message on every commit.
+		
+		We can use HTML tags to manage Readme.md 
+		
+Download VS code  
+Download GIT from git-scm website
+After this will have Desktop Icon of name GIT Bash
+
+git --version
+
+Commands to Configure GIT
+	git config --global user.name "My Name"
+		git config --global user.name "Student Apna College"		//Account name : Student Apna College
+	
+	git config --global user.email "student@apnacollege.in" 		//use same email using which we have created acc on GITHUB
+	git config --list
+	
+
+git Clone : clone a repository on our local machine
+Command : git clone <project_link>		//project_link is link of repository copied from GITHUB
+
+git status : display the status of the code.
+command : git status
+
+Example: 
+		A:\Git\DhanTradeAutomation>git status
+		On branch main								//In Git, the phrase “On branch main” means:You are currently working on the main branch.
+
+		No commits yet
+
+		Untracked files:					// Untracked file are those file which is available in working directory but being tracked by GIT, means file is newly created and
+												it is not commited to git hub
+		
+		(use "git add <file>..." to include in what will be committed)
+        File.txt
+
+nothing added to commit but untracked files present (use "git add" to track)
+
+
+Note : If we have one modified file and one new file create than we will see the status when we hit command -> git status
+		modified : Readme.md
+		untracked file : index.html 	(newly created file)
+
+		file which is ready to commit called staged, after hitting the add command the modified file status change to staged
+		
+git add index.html
+git add Readme.md	
+git status
+	changes to be committed 
+	newfile : index.html
+			  Readme.md
+			  
+			  
+or 
+
+git add . 		(add all the file in directory for commit)
+git add filename.txt			//If we want to commit any a specific file.
+
+git commit -m "commit message"
+
+Note : when we get a message on (git commit -m "message"), Your Branch is Ahead of  'origin/main' by 1 commit
+		means the change we have done on local is not reflect to GITHUB yet
+		so we need to use PUSH command to GITHUB
+
+git push origin main : After this command we can see the change on GITHUB as well
+
+
+init command : it is use to make a local repo so we can sync locally created repo to to github. by running command - > git init
+				we will get a new directory with name of .git, which we can commit to GIT HUB
+				
+If we have created any project on local and we want to push it into GITHUB website than create the project on local
+git remote add origin  <link>  			//using this command we can push our project on GITHUB
+git branch								// command let us know, at what branch we are currently
+git branch -M new_name 						//Use to Rename the branch, where main
+git push -u origin main						// use -u flag to tell that we want to do all the operation on origin main only.
+git checkout new_branch						//use to switch branch
+git checkout -b new_branch					// use to create new branch
+git branch -d branch_name					//use to delete branch, we cant delete the current branch, we need to switch the branch first and than
+											we can delete that branch
+
+git diff branch_name					//compairing current branch with another branch
+git pull origin main					// to pull the changes from remote to local
+
+git merge branch_name					//merging 	another branch with current branch
+	OR
+merge from GITHUB, create PR on GITHUB
+
+Example : let we have a project and that project have wo files Readme.md and index.html along with two branches i.e feature1 and feature2.
+			if we change anything in branch feature1 and its files but no changes can be recorded in feature2 branch files.
+			
+		To commit any change on feature1 
+		command : git push orgin feature1
+		
+		
+		
+		
+		---------------------------------------
+		
+
+
+…or create a new repository on the command line
+echo "# DevOps_Learning" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin git@github.com:prashant12229-cyber/DevOps_Learning.git
+git push -u origin main
+…or push an existing repository from the command line
+git remote add origin git@github.com:prashant12229-cyber/DevOps_Learning.git
+git branch -M main
+git push -u origin main

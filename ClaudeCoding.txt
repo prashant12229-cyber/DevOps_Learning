@@ -1,0 +1,99 @@
+Claude Coding
+
+Other tools in market 
+	1. Cursor
+	2. Windsurf
+	3. Codex
+	4. replit
+	5. Lovable
+	
+Note : Claude code have Agentic capabilities.
+
+
+---------------------------------How to Setup Claude Code (A Paid Software)
+
+Run the command acc to our OS
+For MAC : curl -fsSL https://claude.ai/install.sh | bash
+
+for WIndows Powershell : irm https://claude.ai/install.ps1 | iex
+
+For Windows CMD : curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del install.cmd
+
+
+once  installed we can see the below output
+			|--------------------------------------------------------------------------------------------
+			|PS C:\WINDOWS\system32> irm https://claude.ai/install.ps1 | iex
+			|Setting up Claude Code...
+			|
+			|√ Claude Code successfully installed!
+			|
+			|Version: 2.1.287
+			|
+			|Location: C:\Users\hp5cd\.local\bin\claude.exe
+			|
+			|
+			|Next: Run claude --help to get started
+			|
+			|‼ Setup notes:
+			|● Native installation exists but C:\Users\hp5cd\.local\bin is not in your PATH. Add it by opening: System Properties → Environment Variables → Edit User
+				|PATH → New → Add the path above. Then restart your terminal.
+			|
+			|
+			|✅ Installation complete!
+			|
+			|--------------------------------------------------------------------------------------------
+	
+Now add the installation path in path variable of Environement variable : 
+PATH ->  C:\Users\hp5cd\.local\bin
+
+			|----------------------------
+			|Open the Visual Studio
+			|Run : Claude command
+			|
+			|venv) PS A:\Devops\AI\Langchain> 
+			|(venv) PS A:\Devops\AI\Langchain> claude
+			|Welcome to Claude Code v2.1.287
+			|
+			| Let's get started.
+			|
+			| Choose the text style that looks best with your terminal
+			| To change this later, run /theme
+			|
+			| ❯ ✔ Dark mode
+			|
+			| ╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+			|  1  function greet() {
+			|  2 -  console.log("Hello, World!");                                                                                                                                          
+			|  2 +  console.log("Hello, Claude!");                                                                                                                                         
+			|  3  }
+			| ╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+			|  Syntax theme: Monokai Extended (ctrl+t to disable)
+
+
+Claude Code requires an account to use. Start an interactive session with the claude command and you’ll be prompted to log in on first use:
+Once we run command "Claude", it will provide a URL through which we need to login on Claude, paste the url on browser and login.
+
+
+
+
+
+
+Create Virtual Environement for project
+Command : python3 -m venv venv
+		  source venv/bin/activate
+		  
+We can see the new directory of "venv" has been created.
+
+
+Note : We can Use (shift+!) to go in Bash mode, the benefit of working in Bash mode with Claude is everything that we are doing is now the part of our 
+		Chat history, and we can ask anything regarding our project. like what are the dependency are installed in my project?
+
+
+Create requirement.txt to install dependency 
+Command : pip install -r requirement.txt
+
+list of dependency
+	flask==3.1.3
+	werkzeug==3.1.6
+	pytest==8.3.5
+	pytest-flask==1.3.0

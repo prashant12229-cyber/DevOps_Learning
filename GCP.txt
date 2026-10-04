@@ -1,0 +1,28 @@
+Google Cloud Provider (GCP) : https://cloud.goocle.com   (from here we can create our free account)
+Now provide User account details and Credit card details and get it create.
+And you will be landed on home page.
+
+There are ways to access the Cloud services one is through console and another one is from CLI using programatic access.	
+GCP provide its own cloud shel to access all the services via Rest API. Cloud shell is almost like a linux machine.
+GCP Console also provide the code editor as well, similar like Visual studio or pycharm. this code editor act like it is installed on same machine of cloud shell
+machine.
+
+
+-------------------------------------------Services 
+
+Compute Engine : It is more similar like Ec2 instance in AWS, Whenever we use any service first time on GCP, we need to enable that service.
+
+a Region is a specific geographic location where Google has data centers and cloud resources deployed.
+A region contains multiple zones (isolated data centers) to provide high availability and fault tolerance.
+As of recent Google Cloud infrastructure updates, GCP has 40+ regions and 120+ zones globally.
+
+VM Mchine Family
+General purpose (E2 Series), Compute Optimized (C2 Series), Memory Optimized (M2 Series), GPU (M Series)
+
+Boot Disk : Under this we select our OS either from market place or from custom image or snapshots.
+
+Access Scope: it provides access to interact with other GCP services.
+
+Firewall : Allow HTTP or HTTPS traffic to VM
+
+ 

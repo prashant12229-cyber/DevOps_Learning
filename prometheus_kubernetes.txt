@@ -1,0 +1,101 @@
+prometheus 
+
+: let we have a kubernetes cluster and running pods under the worker nodes of cluster, now if we need to monitor the health of nodes, PODS,
+	resource utilization, memory util, POD health at this point we need prometheus.
+	
+Prometheus ek monitoring tool hai jo Kubernetes ke sabhi components se metrics collect karta hai. Prometheus cluster ka health check karta hai.
+Prometheus bas continuously metrics collect karta rehta hai.
+
+Matrics : these are value of resource parameters like CPU usage, Memory, Network, Disk, POD uptime etc.
+		Metric = Kisi system ki current state ya performance ko number ke form me measure karna.
+metrics have two parts : name + value.		
+		
+
+When Developer  develops the application, he create multiple endpoint of application, for using prometheus developer needs to add othe dependency
+and after adding the below application dependency the /metrics endpoint will be created automatically.
+
+for spring boot application ->  Micrometer + Prometheus Registry library
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-actuator</artifactId>
+</dependency>
+
+<dependency>
+    <groupId>io.micrometer</groupId>
+    <artifactId>micrometer-registry-prometheus</artifactId>
+</dependency>
+
+for golang application -> prometheus/client_golang
+
+for python application-> prometheus_client
+
+
+Ab application ke endpoints ho jate hain:
+	
+POST /login
+POST /signup
+GET  /profile
+GET  /logout
+
+GET  /metrics   <-- NEW endpoint
+
+Now when we run : curl http://pod-ip:8080/metrics
+
+output:	Ye data application generate kar rahi hai, Prometheus nahi.
+http_requests_total 5234
+http_request_duration_seconds 0.21
+process_cpu_seconds_total 18.7
+jvm_memory_used_bytes 123456789
+
+
+Note : Now we have /metrics application endpint which is fetching some of the POD and application data, the prometheus is pulling
+ the same /metrics for presenting the data.
+ 
+ The pulling of application data from /metrics application endpoint  is called Scraping
+ 
+
+
+
+Types of Metrics
+Counter : a number that increases contineousely, only increase never decrease (1,2,3,4,5 : it is like number of time we hit website.) and restarts from zero if application restarts
+Gauge : Gauge are those parameter that increase and decrease as well. like CPU usage, memory etcs some time 80% and some times 10%.
+Histogram : kitni requests kitne time me complete hui. like 200 requests  < 200ms
+Summary: Summary bhi latency measure karta hai. like 50% 100ms -> 80% 200ms -> 90% 350ms -> 99% 450ms
+
+
+metrics labels
+		Metric
+		http_requests_total
+		Value
+		250
+		Labels
+		method="GET"
+		status="200"
+		pod="frontend"
+		namespace="production"
+		
+http_requests_total{
+    method="GET",
+    status="200",
+    pod="frontend-abc",
+    namespace="production"
+} 500
+
+
+Metric Naming Convention : Prometheus ke naming rules hote hain. Jab metrics name me unit per end kr rhi ho tab good metrics hogi.
+| Unit    | Use         |
+| ------- | ----------- |
+| seconds | Time        |
+| bytes   | Memory      |
+| celsius | Temperature |
+| meters  | Distance    |
+| ratio   | Fraction    |
+
+		
+Example: 
+memory (bad) -> memory_bytes (good)
+response_time(Bad)	-> response_time_seconds  (good)
+
+Note: Metric = Name + Labels + Value + Timestamp
+
+
